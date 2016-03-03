@@ -14,7 +14,7 @@ def broadcastData(s, conn, data): # function to send Data
 	print("Data sent to all clients \n")  # print to inform data was went
 
 
-socks = []
+
 conns = []
 
 def clientHandler(): 	
@@ -27,10 +27,19 @@ def clientHandler():
 		data = recieveData(s,conn)
 		if not data: 
 			break
-		for i in range(len(conns)):
-			print i
-			broadcastData(s,conns[i], data)
+		print conns	
+		for con in conns:
+			try:
+				if data == "quit":
+					if conn == con:
+						del con
+					else:
+						broadcastData(s,con, data)
 
+				else:
+					broadcastData(s,con, data)
+			except:
+				continue
 
 
 HOST = '' #localhost
