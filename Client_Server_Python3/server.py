@@ -41,7 +41,7 @@ def clientHandler():
                 continue
 
 
-HOST = '' #localhost
+HOST = 'localhost' #localhost
 PORT = 8000
 
 s = socket(AF_INET, SOCK_STREAM)

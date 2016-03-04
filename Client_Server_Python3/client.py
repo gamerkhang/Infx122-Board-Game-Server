@@ -30,7 +30,7 @@ def sendReceive():
                 
                 s.sendto(message.encode(),(HOST, PORT)) # allows client to send data to Server
                 data = s.recv(1024) # waits for a reply from Server
-                print(data) # print reply from Server
+                print(data.decode("utf-8") ) # print reply from Server
                 if data != "quit":
                   play = False
                 else:
@@ -38,7 +38,7 @@ def sendReceive():
 
           else:
                 data = s.recv(1024) # waits for a reply from Server
-                print(data) # print reply from Server
+                print(data.decode("utf-8") ) # print reply from Server
                 play = True
 
   else:
@@ -56,12 +56,12 @@ def sendReceive():
                 
                 s.sendto(message.encode(),(HOST, PORT)) # allows client to send data to Server
                 data = s.recv(1024) # waits for a reply from Server
-                print(data) # print reply from Server
+                print(data.decode("utf-8") ) # print reply from Server
                 play = False
 
           else:
                 data = s.recv(1024) # waits for a reply from Server
-                print(data) # print reply from Server
+                print(data.decode("utf-8")) # print reply from Server
                 play = True
   print('here')
 
@@ -76,7 +76,7 @@ def sendReceive():
       break; # breaks out of looop and exits program
     s.send(message) # allows client to send data to Server
     data = s.recv(1024) # waits for a reply from Server
-    print(data) # print reply from Server
+    print(data.decode("utf-8")) # print reply from Server
   
 
 
