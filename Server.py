@@ -1,6 +1,6 @@
 from socket import *
 from threading import Thread
-import RemoteClient
+from RemoteClient import RemoteClient
 
 
 class Host:
@@ -20,16 +20,16 @@ class Host:
     @staticmethod
     def receive_data(conn):
         data = conn.recv(1024)
-        print("Server - Received Message", repr(data))
-        return data
+        if data:
+            print("Server - Received Message", data.decode("utf-8"))
+        return data.decode("utf-8")
 
     @staticmethod
     def broadcast_data(conn, data):
-        conn.sendall(data)
+        conn.sendall(data.encode())
 
     def client_handler(self):
-
-        (conn, _address) =  self.host_socket.accept()
+        conn, _address = self.host_socket.accept()
         self.remote_clients += [RemoteClient(conn, _address)]
 
         print(_address, "is Connected")
@@ -39,19 +39,20 @@ class Host:
             data = self.receive_data(conn)
             if not data:
                 break
-            print(self.remote_clients)
-            for con in self.remote_clients:
+            for index in range(len(self.remote_clients)):
                 try:
                     if data == "quit":
-                        if conn == con:
-                            del con
+                        if conn == self.remote_clients[index].get_connection():
+                            del self.remote_clients[index]
+                            continue
                         else:
-                            pass
-                        self.broadcast_data(con, data)
+                            self.broadcast_data(self.remote_clients[index].get_connection(), data)
                     else:
-                        self.broadcast_data(con, data)
+                        self.broadcast_data(self.remote_clients[index].get_connection(), data)
                 except:
+                    del self.remote_clients[index]
                     continue
+                    
 
 if __name__ == '__main__':
 
