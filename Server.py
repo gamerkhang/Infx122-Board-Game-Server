@@ -9,7 +9,7 @@ class Host:
     def __init__(self, address=('localhost', 8000)):
         self.host_socket = socket(AF_INET, SOCK_STREAM)
         self.host_socket.bind(address)
-        self.host_socket.listen(5)
+        self.host_socket.listen(100)
         self.all_saved_profiles = []
         self.wait_list = dict()
         self.remote_clients = []
@@ -107,5 +107,5 @@ class Host:
 if __name__ == '__main__':
 
     host = Host()
-    for i in range(5):
+    for i in range(100):
         Thread(target=host.client_handler).start()

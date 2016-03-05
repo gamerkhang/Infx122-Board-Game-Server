@@ -103,7 +103,11 @@ class Client:
     def send_data(self, data):
         # try:
             print("client sending ", data)
+
+            self.client_socket = socket(AF_INET, SOCK_STREAM)
+            self.client_socket.connect(self.address)
             self.client_socket.sendto(data.encode(), self.address)
+            print("client sent" , data)
         # except:
         #     print("except")
         #     self.client_socket = socket(AF_INET, SOCK_STREAM)
