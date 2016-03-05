@@ -34,7 +34,7 @@ class Client:
         else:
             self._new_account()
 
-    def game(self):
+    def select_game(self):
         print("******** Select a Game ********")
         user_input = ""
         while True:
@@ -47,11 +47,18 @@ class Client:
             else:
                 break
 
-        if user_input.upper() == "L":
-
-            self._login()
+        if user_input.upper() == "C":
+            self.send_data(new_game_protocole(self.username, "Connect4"))
+        elif user_input.upper() == "O":
+            self.send_data(new_game_protocole(self.username, "Othello"))
         else:
-            self._new_account()
+            self.send_data(new_game_protocole(self.username, "Battleship"))
+
+        _expected_answer = self.receive_data()
+        if _expected_answer == "GAME_SET":
+            pass
+        else:
+            print("Huge error. Server sent back >>> " , _expected_answer)
 
     def _login(self):
 
@@ -60,10 +67,12 @@ class Client:
 
                 self.send_data(login_protocole(self.username))
 
-                data = self.receive_data()
+                _expected_answer = self.receive_data()
 
-                if data == "VALID_USERNAME":
+                if _expected_answer == "VALID_USERNAME":
                     break
+                elif _expected_answer == "":
+                    print("Huge error. Server sent back >>> " , _expected_answer)
                 else:
                     print("Invalid username. Please try it again.")
 
@@ -74,12 +83,12 @@ class Client:
 
             self.send_data(new_user_protocole(self.username))
 
-            data = self.receive_data()
+            _expected_answer = self.receive_data()
 
-            if data == "VALID_USERNAME":
+            if _expected_answer == "VALID_USERNAME":
                 break
-            elif data == "":
-                print("Server did not responde")
+            elif _expected_answer == "":
+                print("Huge error. Server sent back >>> " , _expected_answer)
             else:
                 print("Someone already has that username. Try another?")
 
@@ -149,4 +158,5 @@ if __name__ == '__main__':
 
     client = Client()
     client.welcome()
+    client.select_game()
     client.chat()

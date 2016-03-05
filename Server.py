@@ -1,6 +1,6 @@
 from socket import *
 from threading import Thread
-# from RemoteClient import RemoteClient
+from RemoteClient import RemoteClient
 from Profile import Profile
 
 
@@ -11,6 +11,7 @@ class Host:
         self.host_socket.bind(address)
         self.host_socket.listen(5)
         self.all_saved_profiles = []
+        self.wait_list = dict()
         self.remote_clients = []
 
         # *********************************
@@ -23,7 +24,7 @@ class Host:
         return data.decode("utf-8")
 
     def send_data(self, conn, data):
-        conn.sendall(data.encode())
+        conn.send(data.encode())
 
     @staticmethod
     def broadcast_data(conn, data):
@@ -38,6 +39,8 @@ class Host:
             self._login_handler(conn, data)
         elif "NEW_USER" in data:
             self._new_user_handler(conn, data)
+        elif "NEW_GAME" in data:
+            self._new_game(conn, _address, data)
 
         #
         # print(_address, "is Connected")
@@ -93,6 +96,12 @@ class Host:
         else:
             self.all_saved_profiles += [Profile(username)]
             self.send_data(conn, "VALID_USERNAME")
+
+    def _new_game(self, conn, address, data):
+        _data = data.split('@')
+        self.wait_list[_data[2]] = (_data[1], RemoteClient(conn, address))
+        print(self.wait_list)
+        self.send_data(conn, "GAME_SET")
 
 if __name__ == '__main__':
 
