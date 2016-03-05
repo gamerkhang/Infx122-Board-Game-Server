@@ -7,7 +7,6 @@ class RemoteClient:
     """Wraps a remote client socket."""
 
     def __init__(self, conn, _address):
-        #self.name = name
         self.connection = conn
         self.address = _address
 

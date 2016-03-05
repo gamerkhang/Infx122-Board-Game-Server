@@ -17,13 +17,13 @@ class Host:
         # *********************************
         print("Server is running......")
 
-    def receive_data(self,conn):
+    def receive_data(self, conn):
         data = conn.recv(1024)
-        if data:
-            print("Server - Received Message", data.decode("utf-8"))
+        print("Server - Received Message", data.decode("utf-8"))
         return data.decode("utf-8")
 
     def send_data(self, conn, data):
+        print("Server - Send Message", data)
         conn.send(data.encode())
 
     @staticmethod
@@ -38,7 +38,7 @@ class Host:
         if "LOGIN" in data:
             self._login_handler(conn, data)
         elif "NEW_USER" in data:
-            self._new_user_handler(conn, data)
+            self._new_user_handler(conn, _address, data)
         elif "NEW_GAME" in data:
             self._new_game(conn, _address, data)
 
@@ -81,7 +81,7 @@ class Host:
             self.all_saved_profiles += [Profile(username)]
             self.send_data(conn, "VALID_USERNAME")
 
-    def _new_user_handler(self, conn, data):
+    def _new_user_handler(self, conn, address, data):
 
         _data = data.split('@')
         username = _data[1]
@@ -95,11 +95,12 @@ class Host:
             self.send_data(conn, "USERNAME_EXIST")
         else:
             self.all_saved_profiles += [Profile(username)]
+            self.wait_list[_data[1]] = ("GAME_NOT_SET", RemoteClient(conn, address))
             self.send_data(conn, "VALID_USERNAME")
 
     def _new_game(self, conn, address, data):
         _data = data.split('@')
-        self.wait_list[_data[2]] = (_data[1], RemoteClient(conn, address))
+        self.wait_list[_data[1]] = (_data[2], RemoteClient(conn, address))
         print(self.wait_list)
         self.send_data(conn, "GAME_SET")
 

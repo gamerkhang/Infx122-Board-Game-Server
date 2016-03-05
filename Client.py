@@ -94,10 +94,15 @@ class Client:
 
     def receive_data(self):
 
-        return self.client_socket.recv(1024).decode("utf-8")
+        data = self.client_socket.recv(1024).decode("utf-8")
+
+        print("client Received Message >>>", data)
+
+        return data
 
     def send_data(self, data):
         # try:
+            print("client sending ", data)
             self.client_socket.sendto(data.encode(), self.address)
         # except:
         #     print("except")
