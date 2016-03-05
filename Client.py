@@ -1,4 +1,6 @@
 from socket import *
+from Protocole import *
+from signal import signal, SIGPIPE, SIG_DFL
 
 
 class Client:
@@ -7,12 +9,90 @@ class Client:
         self.address = address
         self.client_socket = socket(AF_INET, SOCK_STREAM)
         self.client_socket.connect(self.address)
-        self.name = ""
+        self.username = ""
 
         # *********************************
         print("Client")
 
-    def send_receive(self):
+    def welcome(self):
+        print("************* Welcome Board Game *************")
+
+        user_input = ""
+
+        while True:
+            print("l -> Login: ")
+            print("c -> Create an account:")
+            user_input = input()
+            if user_input.upper() not in ["C", "L"]:
+                print("Invalid input. Please try it again.")
+            else:
+                break
+
+        if user_input.upper() == "L":
+
+            self._login()
+        else:
+            self._new_account()
+
+    def game(self):
+        print("******** Select a Game ********")
+        user_input = ""
+        while True:
+            print("c -> Connect4 ")
+            print("o -> Othello")
+            print("b -> Battleship")
+            user_input = input()
+            if user_input.upper() not in ["C", "O", "B"]:
+                print("Invalid input. Please try it again.")
+            else:
+                break
+
+        if user_input.upper() == "L":
+
+            self._login()
+        else:
+            self._new_account()
+
+    def _login(self):
+
+            while True:
+                self.username = input("Enter your Username: ").strip()
+
+                self.send_data(login_protocole(self.username))
+
+                re = self.receive_data()
+
+                if re == "VALID_USERNAME":
+                    break
+                else:
+                    print("Invalid username. Please try it again.")
+
+    def _new_account(self):
+
+        while True:
+            self.username = input("Enter your Username: ").strip()
+
+            self.send_data(login_protocole(self.username))
+
+            if self.receive_data() == "VALID_USERNAME":
+                break
+            else:
+                print("Someone already has that username. Try another?")
+
+    def receive_data(self):
+
+        return self.client_socket.recv(1024).decode("utf-8")
+
+    def send_data(self, data):
+        # try:
+            self.client_socket.sendto(data.encode(), self.address)
+        # except:
+        #     print("except")
+        #     self.client_socket = socket(AF_INET, SOCK_STREAM)
+        #     self.client_socket.connect(self.address)
+        #     self.send_data(data)
+
+    def chat(self):
 
         message = eval(input("Enter 1 or 2: "))
 
@@ -64,4 +144,5 @@ class Client:
 if __name__ == '__main__':
 
     client = Client()
-    client.send_receive()
+    client.welcome()
+    client.chat()
