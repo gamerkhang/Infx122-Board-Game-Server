@@ -1,6 +1,7 @@
 from socket import *
 from threading import Thread
 from RemoteClient import RemoteClient
+from CurrentGames import CurrentGames
 from Profile import Profile
 
 
@@ -12,6 +13,7 @@ class Host:
         self.host_socket.listen(100)
         self.all_saved_profiles = []
         self.wait_list = dict()
+        self.current_games = dict()
         self.remote_clients = []
 
         # *********************************
@@ -24,7 +26,7 @@ class Host:
 
     def send_data(self, conn, data):
         print("Server - Send Message", data)
-        conn.send(data.encode())
+        conn.sendall(data.encode())
 
     @staticmethod
     def broadcast_data(conn, data):
@@ -34,13 +36,15 @@ class Host:
         conn, _address = self.host_socket.accept()
 
         data = self.receive_data(conn)
-        print(data, "hereeee ")
+
         if "LOGIN" in data:
             self._login_handler(conn, data)
         elif "NEW_USER" in data:
             self._new_user_handler(conn, _address, data)
         elif "NEW_GAME" in data:
             self._new_game(conn, _address, data)
+        elif "AUTO" in data:
+            self._auto_player(conn, _address, data)
 
         #
         # print(_address, "is Connected")
@@ -103,6 +107,30 @@ class Host:
         self.wait_list[_data[1]] = (_data[2], RemoteClient(conn, address))
         print(self.wait_list)
         self.send_data(conn, "GAME_SET")
+
+    def _auto_player(self, conn, address, data):
+        _data = data.split('@')
+        first_player = _data[1]
+        game_to_play = self.wait_list[first_player][0]
+        print("name of the game to play in auto mode", game_to_play)
+        second_player = ''
+
+        for player in self.wait_list.keys():
+            if player != first_player and self.wait_list[player][0] == game_to_play:
+                second_player = player
+                break
+
+        if second_player != "":
+            self.current_games[first_player + "_" + second_player] = CurrentGames(first_player, second_player, RemoteClient(conn, address), self.wait_list[second_player][1])
+
+            print(self.current_games)
+
+            for con in self.current_games[first_player + "_" + second_player].get_connections():
+                print(con)
+                self.send_data(con, "READY")
+        else:
+            self.send_data(conn, "WAIT")
+
 
 if __name__ == '__main__':
 

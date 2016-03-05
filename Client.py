@@ -48,11 +48,11 @@ class Client:
                 break
 
         if user_input.upper() == "C":
-            self.send_data(new_game_protocole(self.username, "Connect4"))
+            self._send_data(new_game_protocole(self.username, "Connect4"))
         elif user_input.upper() == "O":
-            self.send_data(new_game_protocole(self.username, "Othello"))
+            self._send_data(new_game_protocole(self.username, "Othello"))
         else:
-            self.send_data(new_game_protocole(self.username, "Battleship"))
+            self._send_data(new_game_protocole(self.username, "Battleship"))
 
         _expected_answer = self.receive_data()
         if _expected_answer == "GAME_SET":
@@ -60,12 +60,49 @@ class Client:
         else:
             print("Huge error. Server sent back >>> " , _expected_answer)
 
+    def select_player(self):
+        print("******** Select a Player ********")
+        user_input = ""
+        while True:
+            print("a -> Auto-Selection ")
+            print("l -> Select from the list of players")
+            user_input = input()
+            if user_input.upper() not in ["A", "L"]:
+                print("Invalid input. Please try it again.")
+            else:
+                break
+
+        if user_input.upper() == "A":
+            self._send_data(select_auto_player_protocole(self.username))
+        else:
+            self._send_data("SEND_LIST@", self.username)
+            player_list = self.receive_data().split('@')
+            for index in range(len(player_list)):
+                print(index, " ", player_list[index])
+            player_name = input("Enter the name of player you would like to play with: ")
+            self._send_data(select_list_player_protocole(self.username, player_name))
+
+    def play(self):
+        _expected_answer = self.receive_data()
+
+        if _expected_answer == "WAIT":
+            print("WAIT for another player")
+            while True:
+                _expected_answer = self.receive_data()
+                print(self.client_socket)
+                if _expected_answer == "READY":
+                    break
+
+        if _expected_answer == "READY":
+            print("READY to player")
+            print(self.client_socket)
+
     def _login(self):
 
             while True:
                 self.username = input("Enter your Username: ").strip()
 
-                self.send_data(login_protocole(self.username))
+                self._send_data(login_protocole(self.username))
 
                 _expected_answer = self.receive_data()
 
@@ -81,7 +118,7 @@ class Client:
         while True:
             self.username = input("Enter your Username: ").strip()
 
-            self.send_data(new_user_protocole(self.username))
+            self._send_data(new_user_protocole(self.username))
 
             _expected_answer = self.receive_data()
 
@@ -100,19 +137,19 @@ class Client:
 
         return data
 
-    def send_data(self, data):
-        # try:
-            print("client sending ", data)
-
+    def _send_data(self, data):
+            # print("client sending ", data)
             self.client_socket = socket(AF_INET, SOCK_STREAM)
             self.client_socket.connect(self.address)
             self.client_socket.sendto(data.encode(), self.address)
-            print("client sent" , data)
-        # except:
-        #     print("except")
-        #     self.client_socket = socket(AF_INET, SOCK_STREAM)
-        #     self.client_socket.connect(self.address)
-        #     self.send_data(data)
+            # print("client sent" , data)
+
+    def send_data(self, data):
+            # print("client sending ", data)
+            # self.client_socket = socket(AF_INET, SOCK_STREAM)
+            # self.client_socket.connect(self.address)
+            self.client_socket.sendto(data.encode(), self.address)
+            # print("client sent" , data)
 
     def chat(self):
 
@@ -168,4 +205,6 @@ if __name__ == '__main__':
     client = Client()
     client.welcome()
     client.select_game()
+    client.select_player()
+    client.play()
     client.chat()
