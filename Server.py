@@ -16,15 +16,13 @@ class Host:
         # *********************************
         print("Server is running......")
 
-    @staticmethod
-    def receive_data(conn):
+    def receive_data(self,conn):
         data = conn.recv(1024)
         if data:
             print("Server - Received Message", data.decode("utf-8"))
         return data.decode("utf-8")
 
-    @staticmethod
-    def send_data(conn, data):
+    def send_data(self, conn, data):
         conn.sendall(data.encode())
 
     @staticmethod
@@ -38,6 +36,9 @@ class Host:
         print(data, "hereeee ")
         if "LOGIN" in data:
             self._login_handler(conn, data)
+        elif "NEW_USER" in data:
+            self._new_user_handler(conn, data)
+
         #
         # print(_address, "is Connected")
         # print(conn, "conn is Connected")
@@ -72,9 +73,23 @@ class Host:
                 break
 
         if username_exist:
-            print("before ", conn)
             self.send_data(conn, "INVALID_USERNAME")
-            print("after ", conn)
+        else:
+            self.all_saved_profiles += [Profile(username)]
+            self.send_data(conn, "VALID_USERNAME")
+
+    def _new_user_handler(self, conn, data):
+
+        _data = data.split('@')
+        username = _data[1]
+        username_exist = False
+        for _username in self.all_saved_profiles:
+            if username == _username.get_username():
+                username_exist = True
+                break
+
+        if username_exist:
+            self.send_data(conn, "USERNAME_EXIST")
         else:
             self.all_saved_profiles += [Profile(username)]
             self.send_data(conn, "VALID_USERNAME")

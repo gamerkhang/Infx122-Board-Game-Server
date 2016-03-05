@@ -60,9 +60,9 @@ class Client:
 
                 self.send_data(login_protocole(self.username))
 
-                re = self.receive_data()
+                data = self.receive_data()
 
-                if re == "VALID_USERNAME":
+                if data == "VALID_USERNAME":
                     break
                 else:
                     print("Invalid username. Please try it again.")
@@ -72,10 +72,14 @@ class Client:
         while True:
             self.username = input("Enter your Username: ").strip()
 
-            self.send_data(login_protocole(self.username))
+            self.send_data(new_user_protocole(self.username))
 
-            if self.receive_data() == "VALID_USERNAME":
+            data = self.receive_data()
+
+            if data == "VALID_USERNAME":
                 break
+            elif data == "":
+                print("Server did not responde")
             else:
                 print("Someone already has that username. Try another?")
 
