@@ -4,7 +4,7 @@ from Protocole import *
 
 class Client:
 
-    def __init__(self, address=('127.0.0.1', 8000)):
+    def __init__(self, address=('localhost', 9999)):
         self.address = address
         self.client_socket = socket(AF_INET, SOCK_STREAM)
         self.client_socket.connect(self.address)
@@ -28,7 +28,6 @@ class Client:
                 break
 
         if user_input.upper() == "L":
-
             self._login()
         else:
             self._new_account()
@@ -93,25 +92,25 @@ class Client:
 
         if _expected_answer == "READY":
             print("READY to player")
-            self.send_data("READY to play from client ")
+            self._send_data("READY to play from client ")
             _expected_answer = self.receive_data()
             print("_expected_answer ", _expected_answer)
 
     def _login(self):
 
-            while True:
-                self.username = input("Enter your Username: ").strip()
+        while True:
+            self.username = input("Enter your Username: ").strip()
 
-                self._send_data(login_protocole(self.username))
+            self._send_data(login_protocole(self.username))
 
-                _expected_answer = self.receive_data()
+            _expected_answer = self.receive_data()
 
-                if _expected_answer == "VALID_USERNAME":
-                    break
-                elif _expected_answer == "":
-                    print("Huge error. Server sent back >>> " , _expected_answer)
-                else:
-                    print("Invalid username. Please try it again.")
+            if _expected_answer == "VALID_USERNAME":
+                break
+            elif _expected_answer == "":
+                print("Huge error. Server sent back >>> " , _expected_answer)
+            else:
+                print("Invalid username. Please try it again.")
 
     def _new_account(self):
 
@@ -121,7 +120,6 @@ class Client:
             self._send_data(new_user_protocole(self.username))
 
             _expected_answer = self.receive_data()
-
             if _expected_answer == "VALID_USERNAME":
                 break
             elif _expected_answer == "":
@@ -130,25 +128,26 @@ class Client:
                 print("Someone already has that username. Try another?")
 
     def receive_data(self):
-
-        data = self.client_socket.recv(1024).decode("utf-8")
-
+        data = str(self.client_socket.recv(1024), "utf-8")
+        # data = self.client_socket.recv(1024).decode("utf-8")
         print("client Received Message >>>", data)
-
-        return data
+        return data.strip()
 
     def _send_data(self, data):
+        self.client_socket.sendall(bytes(data + "\n", "utf-8"))
         # print("client sending ", data)
-        self.client_socket = socket(AF_INET, SOCK_STREAM)
-        self.client_socket.connect(self.address)
-        self.client_socket.sendto(data.encode(), self.address)
+        # self.client_socket = socket(AF_INET, SOCK_STREAM)
+        # self.client_socket.connect(self.address)
+        # self.client_socket.sendto(data.encode(), self.address)
         # print("client sent" , data)
 
     def send_data(self, data):
+        pass
+        #self.client_socket.sendall(bytes(data + "\n", "utf-8"))
             #print("client sending ", data)
             # self.client_socket = socket(AF_INET, SOCK_STREAM)
             # self.client_socket.connect(self.address)
-            self.client_socket.sendto(data.encode(), self.address)
+            #self.client_socket.sendto(data.encode(), self.address)
             #print("client sent", data)
 
     def chat(self):
@@ -217,4 +216,4 @@ if __name__ == '__main__':
     client.select_game()
     client.select_player()
     client.play()
-    client.chat()
+    # client.chat()
