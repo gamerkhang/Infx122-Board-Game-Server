@@ -3,6 +3,11 @@ from threading import Thread
 from RemoteClient import RemoteClient
 from CurrentGames import CurrentGames
 from Profile import Profile
+from collections import namedtuple
+
+
+RemoteClientConnection = namedtuple("RemoteClientConnection", ["connection", "address"])
+
 
 
 class Host:
@@ -99,6 +104,7 @@ class Host:
             self.send_data(conn, "USERNAME_EXIST")
         else:
             self.all_saved_profiles += [Profile(username)]
+            #self.wait_list[_data[1]] = ("GAME_NOT_SET", namedtuple("RemoteClientConnection", ["connection", "address"]))
             self.wait_list[_data[1]] = ("GAME_NOT_SET", RemoteClient(conn, address))
             self.send_data(conn, "VALID_USERNAME")
 
@@ -129,6 +135,7 @@ class Host:
                 print(con)
                 self.send_data(con, "READY")
         else:
+            self.wait_list[first_player] = (game_to_play, RemoteClient(conn, address))
             self.send_data(conn, "WAIT")
 
 
