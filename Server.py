@@ -156,14 +156,16 @@ class TCPServer(socketserver.BaseRequestHandler):
             if str_data == '':
                 break
 
+            conn = self.request
+
             if "LOGIN" in str_data:
                 self._login_handler(str_data)
             elif "NEW_USER" in str_data:
-                self._new_user_handler(str_data)
+                self._new_user_handler(str_data, conn)
             elif "NEW_GAME" in str_data:
-                self._new_game(str_data)
+                self._new_game(str_data, conn)
             elif "AUTO" in str_data:
-                self._auto_player(str_data)
+                self._auto_player(str_data, conn)
             # else:
             #     print("from here")
             #
@@ -183,6 +185,9 @@ class TCPServer(socketserver.BaseRequestHandler):
         print("Server - Send Message", data)
         self.request.sendall(bytes(data + "\n", "utf-8"))
 
+    def send_data_to_connection(self, conn, data):
+        print("Server - Send Message to a connection", data)
+        conn.sendall(data.encode())
 
     def _login_handler(self, conn, data):
 
@@ -200,7 +205,7 @@ class TCPServer(socketserver.BaseRequestHandler):
             self.all_saved_profiles += [Profile(username)]
             self.send_data(conn, "VALID_USERNAME")
 
-    def _new_user_handler(self, data):
+    def _new_user_handler(self, data, conn):
 
         _data = data.split('@')
         username = _data[1]
@@ -216,43 +221,46 @@ class TCPServer(socketserver.BaseRequestHandler):
         else:
             all_saved_profiles += [Profile(username)]
             global wait_list
-            wait_list[_data[1]] = "GAME_NOT_SET"
+            wait_list[_data[1]] = ("GAME_NOT_SET", RemoteClient(conn))
             self.send_data("VALID_USERNAME")
 
-    def _new_game(self, data):
+    def _new_game(self, data, conn):
         _data = data.split('@')
         global wait_list
-        wait_list[_data[1]] = _data[2]
+        wait_list[_data[1]] = (_data[2], RemoteClient(conn))
         print(wait_list)
         self.send_data("GAME_SET")
 
-    def _auto_player(self, data):
+    def _auto_player(self, data, conn):
         _data = data.split('@')
         first_player = _data[1]
         global wait_list
-        game_to_play = wait_list[first_player]
+        game_to_play = wait_list[first_player][0]
         print("name of the game to play in auto mode ", game_to_play)
         second_player = ''
 
         for player in wait_list.keys():
-            if player != first_player and wait_list[player] == game_to_play:
+            if player != first_player and wait_list[player][0] == game_to_play:
                 second_player = player
                 break
 
+        print("second_player ", second_player)
         if second_player != "":
             global current_games
-            current_games[first_player + "_" + second_player] = CurrentGames(first_player, second_player)
+            current_games[first_player + "_" + second_player] = CurrentGames(first_player, second_player, RemoteClient(conn), wait_list[second_player][1])
             del wait_list[first_player]
             del wait_list[second_player]
             print("wait_list ", wait_list)
             print("current_games", current_games)
 
-            # for con in current_games[first_player + "_" + second_player]:
-            #     print(con)
-            self.send_data("READY")
+            for con in current_games[first_player + "_" + second_player].get_connections():
+                print(type(con))
+                #con.sendall("READY".encode())
+                #conn.sendall("READY".encode())
+                self.send_data_to_connection(con, "READY")
 
         else:
-            wait_list[first_player] = game_to_play
+            wait_list[first_player] = (game_to_play, RemoteClient(conn))
             self.send_data("WAIT")
 
 
