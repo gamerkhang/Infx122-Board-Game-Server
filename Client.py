@@ -4,7 +4,7 @@ from Protocole import *
 
 class Client:
 
-    def __init__(self, address=('localhost', 8000)):
+    def __init__(self, address=('127.0.0.1', 8000)):
         self.address = address
         self.client_socket = socket(AF_INET, SOCK_STREAM)
         self.client_socket.connect(self.address)
@@ -88,12 +88,14 @@ class Client:
             print("WAIT for another player...")
             while True:
                 _expected_answer = self.receive_data()
-                #print(self.client_socket)
                 if _expected_answer == "READY":
                     break
 
         if _expected_answer == "READY":
             print("READY to player")
+            self.send_data("READY to play from client ")
+            _expected_answer = self.receive_data()
+            print("_expected_answer ", _expected_answer)
 
     def _login(self):
 
@@ -136,18 +138,18 @@ class Client:
         return data
 
     def _send_data(self, data):
-            # print("client sending ", data)
-            self.client_socket = socket(AF_INET, SOCK_STREAM)
-            self.client_socket.connect(self.address)
-            self.client_socket.sendto(data.encode(), self.address)
-            # print("client sent" , data)
+        # print("client sending ", data)
+        self.client_socket = socket(AF_INET, SOCK_STREAM)
+        self.client_socket.connect(self.address)
+        self.client_socket.sendto(data.encode(), self.address)
+        # print("client sent" , data)
 
     def send_data(self, data):
-            # print("client sending ", data)
+            #print("client sending ", data)
             # self.client_socket = socket(AF_INET, SOCK_STREAM)
             # self.client_socket.connect(self.address)
             self.client_socket.sendto(data.encode(), self.address)
-            # print("client sent" , data)
+            #print("client sent", data)
 
     def chat(self):
 
@@ -164,16 +166,21 @@ class Client:
                         self.client_socket.close()  # closes socket is user quicks
                         break  # breaks out of looop and exits program
 
-                    self.client_socket.sendto(message.encode(), self.address)
-                    data = self.client_socket.recv(1024) # waits for a reply from Server
+                    self.send_data(message)
+                    #self.client_socket.sendto(message.encode(), self.address)
+                    data = self.receive_data()
+                    print(data)
+                    #data = self.client_socket.recv(1024) # waits for a reply from Server
                     # print(data.decode("utf-8")) # print reply from Server
                     if data != "quit":
                         play = False
                     else:
                         play = True
                 else:
-                    data = self.client_socket.recv(1024) # waits for a reply from Server
-                    print(data.decode("utf-8"))  # print reply from Server
+                    data = self.receive_data()
+                    print(data)
+                    #data = self.client_socket.recv(1024) # waits for a reply from Server
+                    #print(data.decode("utf-8"))  # print reply from Server
                     play = True
         else:
 
@@ -188,13 +195,18 @@ class Client:
                         self.client_socket.close()  # closes socket is user quicks
                         break  # breaks out of looop and exits program
 
-                    self.client_socket.sendto(message.encode(), self.address) # allows client to send data to Server
-                    data = self.client_socket.recv(1024) # waits for a reply from Server
-                    print(data.decode("utf-8") ) # print reply from Server
+                    self.send_data(message)
+                    data = self.receive_data()
+                    print(data)
+                    #self.client_socket.sendto(message.encode(), self.address) # allows client to send data to Server
+                    #data = self.client_socket.recv(1024) # waits for a reply from Server
+                    #print(data.decode("utf-8") ) # print reply from Server
                     play = False
                 else:
-                    data = self.client_socket.recv(1024) # waits for a reply from Server
-                    print(data.decode("utf-8")) # print reply from Server
+                    data = self.receive_data()
+                    print(data)
+                    #data = self.client_socket.recv(1024) # waits for a reply from Server
+                    #print(data.decode("utf-8")) # print reply from Server
                     play = True
 
 

@@ -3,16 +3,12 @@ from threading import Thread
 from RemoteClient import RemoteClient
 from CurrentGames import CurrentGames
 from Profile import Profile
-from collections import namedtuple
 
-
-RemoteClientConnection = namedtuple("RemoteClientConnection", ["connection", "address"])
-
-
+conns = []
 
 class Host:
 
-    def __init__(self, address=('localhost', 8000)):
+    def __init__(self, address=('127.0.0.1', 8000)):
         self.host_socket = socket(AF_INET, SOCK_STREAM)
         self.host_socket.bind(address)
         self.host_socket.listen(100)
@@ -39,7 +35,6 @@ class Host:
 
     def client_handler(self):
         conn, _address = self.host_socket.accept()
-
         data = self.receive_data(conn)
 
         if "LOGIN" in data:
@@ -50,29 +45,28 @@ class Host:
             self._new_game(conn, _address, data)
         elif "AUTO" in data:
             self._auto_player(conn, _address, data)
+        else:
+            print("from here")
 
-        #
-        # print(_address, "is Connected")
-        # print(conn, "conn is Connected")
-        #
-        # while 1:
-        #     data = self.receive_data(conn)
-        #     if not data:
-        #         break
-        #
-        #     for index in range(len(self.remote_clients)):
-        #         try:
-        #             if data == "quit":
-        #                 if conn == self.remote_clients[index].get_connection():
-        #                     del self.remote_clients[index]
-        #                     continue
-        #                 else:
-        #                     self.send_data(self.remote_clients[index].get_connection(), data)
-        #             else:
-        #                 self.send_data(self.remote_clients[index].get_connection(), data)
-        #         except:
-        #             del self.remote_clients[index]
-        #             continue
+            for key in self.current_games.keys():
+                for con in self.current_games[key].get_connections():
+                    print(con)
+                    self.send_data(con, data)
+
+
+                # for index in range(len(self.remote_clients)):
+                #     try:
+                #         if data == "quit":
+                #             if conn == self.remote_clients[index].get_connection():
+                #                 del self.remote_clients[index]
+                #                 continue
+                #             else:
+                #                 self.send_data(self.remote_clients[index].get_connection(), data)
+                #         else:
+                #             self.send_data(self.remote_clients[index].get_connection(), data)
+                #     except:
+                #         del self.remote_clients[index]
+                #         continue
 
     def _login_handler(self, conn, data):
 
@@ -104,7 +98,6 @@ class Host:
             self.send_data(conn, "USERNAME_EXIST")
         else:
             self.all_saved_profiles += [Profile(username)]
-            #self.wait_list[_data[1]] = ("GAME_NOT_SET", namedtuple("RemoteClientConnection", ["connection", "address"]))
             self.wait_list[_data[1]] = ("GAME_NOT_SET", RemoteClient(conn, address))
             self.send_data(conn, "VALID_USERNAME")
 
@@ -128,12 +121,15 @@ class Host:
 
         if second_player != "":
             self.current_games[first_player + "_" + second_player] = CurrentGames(first_player, second_player, RemoteClient(conn, address), self.wait_list[second_player][1])
-
+            del self.wait_list[first_player]
+            del self.wait_list[second_player]
+            print(self.wait_list)
             print(self.current_games)
 
             for con in self.current_games[first_player + "_" + second_player].get_connections():
                 print(con)
                 self.send_data(con, "READY")
+
         else:
             self.wait_list[first_player] = (game_to_play, RemoteClient(conn, address))
             self.send_data(conn, "WAIT")
