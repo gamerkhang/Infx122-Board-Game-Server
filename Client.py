@@ -1,5 +1,5 @@
 from socket import *
-from Protocole import *
+from Protocol import Protocol
 
 
 class Client:
@@ -11,7 +11,7 @@ class Client:
         self.username = ""
 
         # *********************************
-        print("Client")
+        print("Client connected...")
 
     def welcome(self):
         print("************* Welcome Board Game *************")
@@ -28,9 +28,9 @@ class Client:
                 break
 
         if user_input.upper() == "L":
-            self._login()
+            self.login()
         else:
-            self._new_account()
+            self.new_account()
 
     def select_game(self):
         print("******** Select a Game ********")
@@ -46,17 +46,17 @@ class Client:
                 break
 
         if user_input.upper() == "C":
-            self._send_data(new_game_protocole(self.username, "Connect4"))
+            self.send_data(Protocol.new_game(self.username, "Connect4"))
         elif user_input.upper() == "O":
-            self._send_data(new_game_protocole(self.username, "Othello"))
+            self.send_data(Protocol.new_game(self.username, "Othello"))
         else:
-            self._send_data(new_game_protocole(self.username, "Battleship"))
+            self.send_data(Protocol.new_game(self.username, "Battleship"))
 
         _expected_answer = self.receive_data()
         if _expected_answer == "GAME_SET":
             pass
         else:
-            print("Huge error. Server sent back >>> " , _expected_answer)
+            print("Huge error. Server sent back >>> ", _expected_answer)
 
     def select_player(self):
         print("******** Select a Player ********")
@@ -71,14 +71,14 @@ class Client:
                 break
 
         if user_input.upper() == "A":
-            self._send_data(select_auto_player_protocole(self.username))
+            self.send_data(Protocol.auto_player(self.username))
         else:
-            self._send_data("SEND_LIST@", self.username)
+            self.send_data("SEND_LIST@", self.username)
             player_list = self.receive_data().split('@')
             for index in range(len(player_list)):
                 print(index, " ", player_list[index])
             player_name = input("Enter the name of player you would like to play with: ")
-            self._send_data(select_list_player_protocole(self.username, player_name))
+            self.send_data(Protocol.list_of_players(self.username, player_name))
 
     def play(self):
         _expected_answer = self.receive_data()
@@ -92,63 +92,46 @@ class Client:
 
         if _expected_answer == "READY":
             print("READY to player")
-            self._send_data("READY to play from client ")
-            _expected_answer = self.receive_data()
-            print("_expected_answer ", _expected_answer)
 
-    def _login(self):
+    def login(self):
 
         while True:
             self.username = input("Enter your Username: ").strip()
 
-            self._send_data(login_protocole(self.username))
+            self.send_data(Protocol.login(self.username))
 
             _expected_answer = self.receive_data()
 
             if _expected_answer == "VALID_USERNAME":
                 break
             elif _expected_answer == "":
-                print("Huge error. Server sent back >>> " , _expected_answer)
+                print("Huge error. Server sent back >>> ", _expected_answer)
             else:
                 print("Invalid username. Please try it again.")
 
-    def _new_account(self):
+    def new_account(self):
 
         while True:
             self.username = input("Enter your Username: ").strip()
 
-            self._send_data(new_user_protocole(self.username))
+            self.send_data(Protocol.new_user(self.username))
 
             _expected_answer = self.receive_data()
+
             if _expected_answer == "VALID_USERNAME":
                 break
             elif _expected_answer == "":
-                print("Huge error. Server sent back >>> " , _expected_answer)
+                print("Huge error. Server sent back >>> ", _expected_answer)
             else:
                 print("Someone already has that username. Try another?")
 
     def receive_data(self):
         data = str(self.client_socket.recv(1024), "utf-8")
-        # data = self.client_socket.recv(1024).decode("utf-8")
-        print("client Received Message >>>", data)
+        # print("client Received Message >>>", data)  # For debugging
         return data.strip()
 
-    def _send_data(self, data):
-        self.client_socket.sendall(bytes(data + "\n", "utf-8"))
-        # print("client sending ", data)
-        # self.client_socket = socket(AF_INET, SOCK_STREAM)
-        # self.client_socket.connect(self.address)
-        # self.client_socket.sendto(data.encode(), self.address)
-        # print("client sent" , data)
-
     def send_data(self, data):
-        pass
-        #self.client_socket.sendall(bytes(data + "\n", "utf-8"))
-            #print("client sending ", data)
-            # self.client_socket = socket(AF_INET, SOCK_STREAM)
-            # self.client_socket.connect(self.address)
-            #self.client_socket.sendto(data.encode(), self.address)
-            #print("client sent", data)
+        self.client_socket.sendall(bytes(data + "\n", "utf-8"))
 
     def chat(self):
 
@@ -216,4 +199,4 @@ if __name__ == '__main__':
     client.select_game()
     client.select_player()
     client.play()
-    # client.chat()
+    client.chat()
