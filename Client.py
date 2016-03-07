@@ -1,5 +1,6 @@
 from socket import *
 from Protocol import Protocol
+from Client_UI import ClientUI
 
 
 class Client:
@@ -13,90 +14,27 @@ class Client:
         # *********************************
         print("Client connected...")
 
+    def receive_data(self):
+        data = str(self.client_socket.recv(1024), "utf-8")
+        # print("client Received Message >>>", data)  # For debugging
+        return data.strip()
+
+    def send_data(self, data):
+        self.client_socket.sendall(bytes(data + "\n", "utf-8"))
+
     def welcome(self):
-        print("************* Welcome Board Game *************")
 
-        user_input = ""
-
-        while True:
-            print("l -> Login: ")
-            print("c -> Create an account:")
-            user_input = input()
-            if user_input.upper() not in ["C", "L"]:
-                print("Invalid input. Please try it again.")
-            else:
-                break
+        user_input = ClientUI.welcome()
 
         if user_input.upper() == "L":
             self.login()
         else:
             self.new_account()
 
-    def select_game(self):
-        print("******** Select a Game ********")
-        user_input = ""
-        while True:
-            print("c -> Connect4 ")
-            print("o -> Othello")
-            print("b -> Battleship")
-            user_input = input()
-            if user_input.upper() not in ["C", "O", "B"]:
-                print("Invalid input. Please try it again.")
-            else:
-                break
-
-        if user_input.upper() == "C":
-            self.send_data(Protocol.new_game(self.username, "Connect4"))
-        elif user_input.upper() == "O":
-            self.send_data(Protocol.new_game(self.username, "Othello"))
-        else:
-            self.send_data(Protocol.new_game(self.username, "Battleship"))
-
-        _expected_answer = self.receive_data()
-        if _expected_answer == "GAME_SET":
-            pass
-        else:
-            print("Huge error. Server sent back >>> ", _expected_answer)
-
-    def select_player(self):
-        print("******** Select a Player ********")
-        user_input = ""
-        while True:
-            print("a -> Auto-Selection ")
-            print("l -> Select from the list of players")
-            user_input = input()
-            if user_input.upper() not in ["A", "L"]:
-                print("Invalid input. Please try it again.")
-            else:
-                break
-
-        if user_input.upper() == "A":
-            self.send_data(Protocol.auto_player(self.username))
-        else:
-            self.send_data("SEND_LIST@", self.username)
-            player_list = self.receive_data().split('@')
-            for index in range(len(player_list)):
-                print(index, " ", player_list[index])
-            player_name = input("Enter the name of player you would like to play with: ")
-            self.send_data(Protocol.list_of_players(self.username, player_name))
-
-    def play(self):
-        _expected_answer = self.receive_data()
-
-        if _expected_answer == "WAIT":
-            print("WAIT for another player...")
-            while True:
-                _expected_answer = self.receive_data()
-                if _expected_answer == "READY":
-                    break
-
-        if _expected_answer == "READY":
-            print("READY to player")
-
     def login(self):
 
         while True:
-            self.username = input("Enter your Username: ").strip()
+            self.username = ClientUI.get_user_input("Enter your Username: ")
 
             self.send_data(Protocol.login(self.username))
 
@@ -105,9 +43,9 @@ class Client:
             if _expected_answer == "VALID_USERNAME":
                 break
             elif _expected_answer == "":
-                print("Huge error. Server sent back >>> ", _expected_answer)
+                ClientUI.print_detail("Huge error. Server sent back >>> " + _expected_answer)
             else:
-                print("Invalid username. Please try it again.")
+                ClientUI.print_detail("Invalid username. Please try it again.")
 
     def new_account(self):
 
@@ -125,13 +63,54 @@ class Client:
             else:
                 print("Someone already has that username. Try another?")
 
-    def receive_data(self):
-        data = str(self.client_socket.recv(1024), "utf-8")
-        # print("client Received Message >>>", data)  # For debugging
-        return data.strip()
+    def select_game(self):
 
-    def send_data(self, data):
-        self.client_socket.sendall(bytes(data + "\n", "utf-8"))
+        user_input = ClientUI.select_game()
+
+        if user_input.upper() == "C":
+            self.send_data(Protocol.new_game(self.username, "Connect4"))
+        elif user_input.upper() == "O":
+            self.send_data(Protocol.new_game(self.username, "Othello"))
+        else:
+            self.send_data(Protocol.new_game(self.username, "Battleship"))
+
+        _expected_answer = self.receive_data()
+
+        if _expected_answer == "GAME_SET":
+            pass
+        else:
+            ClientUI.print_detail("Huge error. Server sent back >>> " + _expected_answer)
+
+    def select_player(self):
+
+        user_input = ClientUI.select_player()
+
+        if user_input.upper() == "A":
+            self.send_data(Protocol.auto_player(self.username))
+        else:
+            self.send_data("SEND_LIST@", self.username)
+
+            player_list = self.receive_data().split('@')
+
+            for index in range(len(player_list)):
+                ClientUI.print_detail(str(index) + " " + player_list[index])
+
+            player_name = ClientUI.get_user_input("Enter the name of player you would like to play with: ")
+
+            self.send_data(Protocol.list_of_players(self.username, player_name))
+
+    def play(self):
+        _expected_answer = self.receive_data()
+
+        if _expected_answer == "WAIT":
+            ClientUI.print_detail("WAIT for another player...")
+            while True:
+                _expected_answer = self.receive_data()
+                if _expected_answer == "READY":
+                    break
+
+        if _expected_answer == "READY":
+            ClientUI.print_detail("READY to player")
 
     def chat(self):
 

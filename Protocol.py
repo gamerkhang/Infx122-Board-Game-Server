@@ -1,6 +1,7 @@
 
 class Protocol:
 
+    @staticmethod
     def login(username):
         return "LOGIN@" + username
 
