@@ -93,16 +93,16 @@ class Client:
         if user_input.upper() == "A":
             self.send_data(Protocol.auto_player(self.username))
         else:
-            self.send_data("SEND_LIST@", self.username)
+            self.send_data(Protocol.send_list(self.username))
 
             player_list = self.receive_data().split('@')
 
-            for index in range(len(player_list)):
+            for index in range(len(player_list)-1):
                 ClientUI.print_detail(str(index) + " " + player_list[index])
 
             player_name = ClientUI.get_user_input("Enter the name of player you would like to play with: ")
 
-            self.send_data(Protocol.list_of_players(self.username, player_name))
+            self.send_data(Protocol.select_player(self.username, player_name))
 
     def play(self):
         _expected_answer = self.receive_data()

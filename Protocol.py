@@ -18,7 +18,13 @@ class Protocol:
         return "AUTO@" + username
 
     @staticmethod
-    def list_of_players(username, player):
+    def list_of_players(thelist):
+        return thelist
+
+    @staticmethod
+    def select_player(username, player):
         return "LIST@" + username + "@" + player
 
-
+    @staticmethod
+    def send_list(username):
+        return "SEND_LIST@" + username

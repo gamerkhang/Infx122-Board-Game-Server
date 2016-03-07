@@ -34,6 +34,8 @@ class TCPServer(socketserver.BaseRequestHandler):
                 self._new_game(str_data, conn)
             elif "AUTO" in str_data:
                 self._auto_player(str_data, conn)
+            elif "SEND_LIST" in str_data:
+                self._current_players(str_data, conn)
             # else:
             #     print("from here")
             #
@@ -139,6 +141,16 @@ class TCPServer(socketserver.BaseRequestHandler):
 
     def play_game(self):
         pass
+
+    def _current_players(self, str_data, conn):
+        thelist = ""
+        recv = str_data.split('@')
+        cur = recv[1]
+        for prof in all_saved_profiles:
+            if cur != prof.get_username():
+                thelist += prof.get_username()
+                thelist += "@"
+        self.send_data_to_connection(conn, thelist)
 
 if __name__ == '__main__':
 
