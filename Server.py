@@ -2,6 +2,7 @@ from RemoteClient import RemoteClient
 from CurrentGames import CurrentGames
 from Profile import Profile
 import socketserver
+from OthelloBoard import OthelloBoard
 
 
 all_saved_profiles = []
@@ -112,7 +113,7 @@ class TCPServer(socketserver.BaseRequestHandler):
 
         if second_player != "":
             global current_games
-            current_games[first_player + "_" + second_player] = CurrentGames(game_to_play, first_player, second_player, RemoteClient(conn), wait_list[second_player][1])
+            current_games[first_player + "_" + second_player] = CurrentGames(game_to_play, first_player, second_player, RemoteClient(conn), wait_list[second_player][1], self._create_board(game_to_play))
             del wait_list[first_player]
             del wait_list[second_player]
             print("wait_list ", wait_list)  # For debugging
@@ -120,11 +121,24 @@ class TCPServer(socketserver.BaseRequestHandler):
 
             for con in current_games[first_player + "_" + second_player].get_connections():
                 self.send_data_to_connection(con, "READY")
+                self.send_data_to_connection(con, "GAME-ID@" + first_player + "_" + second_player)
 
         else:
             wait_list[first_player] = (game_to_play, RemoteClient(conn))
             self.send_data_to_connection(conn, "WAIT")
 
+    def _create_board(self, game: str):
+        if game == "Connect4":
+            pass
+            #return Connect4Board()
+        elif game == "Othello":
+            return OthelloBoard()
+        else:
+            pass
+            #return BattleshipBoard()
+
+    def play_game(self):
+        pass
 
 if __name__ == '__main__':
 

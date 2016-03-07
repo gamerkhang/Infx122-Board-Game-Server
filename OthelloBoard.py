@@ -1,5 +1,5 @@
 
-import Board
+from Board import Board
 from GameException import *
 
 
@@ -7,7 +7,7 @@ class OthelloBoard(Board):
 
     def __init__(self):
         """ Initializes a Othello with traditional default values. """
-
+        Board.__init__(self)
         self._NONE = ' '
         self._BLACK = 'B'
         self._WHITE = 'W'

@@ -1,5 +1,5 @@
 
-class Board:
+class Board(object):
 
     def get_game_state(self) -> [[str]]:
         pass

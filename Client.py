@@ -10,6 +10,8 @@ class Client:
         self.client_socket = socket(AF_INET, SOCK_STREAM)
         self.client_socket.connect(self.address)
         self.username = ""
+        self.game = ""
+        self.game_id = ""
 
         # *********************************
         print("Client connected...")
@@ -68,10 +70,13 @@ class Client:
         user_input = ClientUI.select_game()
 
         if user_input.upper() == "C":
+            self.game = "Connect4"
             self.send_data(Protocol.new_game(self.username, "Connect4"))
         elif user_input.upper() == "O":
+            self.game = "Othello"
             self.send_data(Protocol.new_game(self.username, "Othello"))
         else:
+            self.game = "Battleship"
             self.send_data(Protocol.new_game(self.username, "Battleship"))
 
         _expected_answer = self.receive_data()
@@ -111,6 +116,24 @@ class Client:
 
         if _expected_answer == "READY":
             ClientUI.print_detail("READY to player")
+
+        _expected_answer = self.receive_data()
+
+        if "GAME-ID" in _expected_answer:
+            data = _expected_answer.split("@")
+            self.game_id = data[1]
+            data = data[1].split("_")
+
+            if data[0] == self.username:
+                print("username: ", self.username, "  >>> I am the 1st player")
+                print("Game_ID: ", self.game_id)
+            else:
+                print("username: ", self.username, "  >>> I am the 2nd player")
+                print("Game_ID: ", self.game_id)
+
+
+
+
 
     def chat(self):
 
