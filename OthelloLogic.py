@@ -38,11 +38,11 @@ class OthelloLogic(GameLogic):
 
         dices_to_flip = []
 
-        if (OthelloLogic.valid_row(row)) and (OthelloLogic.valid_col(col)) and (board.get_game_state()[row][col] != board.get_none()):
+        if (OthelloLogic.valid_row(board, row)) and (OthelloLogic.valid_col(board, col)) and (board.get_game_state()[row][col] != board.get_none()):
             return dices_to_flip
 
         current_player = board.get_player_turn()
-        next_player = OthelloLogic._switch_Turn()
+        next_player = OthelloLogic._switch_Turn(board)
 
         for [row_coordinates, col_coordinates] in [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]:
 
@@ -51,21 +51,21 @@ class OthelloLogic(GameLogic):
 
             temp = [row_coordinates + row, col_coordinates + col]
 
-            if OthelloLogic.valid_row(temp[0]) and OthelloLogic.valid_col(temp[1]) and (board.get_game_state()[temp[0]][temp[1]] == next_player):
+            if OthelloLogic.valid_row(board, temp[0]) and OthelloLogic.valid_col(board, temp[1]) and (board.get_game_state()[temp[0]][temp[1]] == next_player):
 
                 temp = [row_coordinates + temp[0], col_coordinates + temp[1]]
 
-                if not (OthelloLogic.valid_row(temp[0]) and OthelloLogic.valid_col(temp[1])):
+                if not (OthelloLogic.valid_row(board, temp[0]) and OthelloLogic.valid_col(board, temp[1])):
                     continue
 
                 while board.get_game_state()[temp[0]][temp[1]] == next_player:
 
                     temp = [row_coordinates + temp[0], col_coordinates + temp[1]]
 
-                    if not (OthelloLogic.valid_row(temp[0]) and OthelloLogic.valid_col(temp[1])):
+                    if not (OthelloLogic.valid_row(board, temp[0]) and OthelloLogic.valid_col(board, temp[1])):
                         break
 
-                if not (OthelloLogic.valid_row(temp[0]) and OthelloLogic.valid_col(temp[1])):
+                if not (OthelloLogic.valid_row(board, temp[0]) and OthelloLogic.valid_col(board, temp[1])):
                     continue
 
                 if board.get_game_state()[temp[0]][temp[1]] == current_player:
@@ -89,7 +89,7 @@ class OthelloLogic(GameLogic):
 
             for col in range(board.get_num_rows()):
                 temp = [row, col]
-                if len(OthelloLogic.valid_moves(row, col)) != 0:
+                if len(OthelloLogic.valid_moves(board, row, col)) != 0:
                     all_valid_moves.append(temp)
 
         return all_valid_moves
@@ -102,10 +102,12 @@ class OthelloLogic(GameLogic):
         row = int(move[0])
         col = int(move[1])
 
-        if (not (OthelloLogic.valid_row(row))) or (not (OthelloLogic.valid_col(col))) or (board.get_game_state()[row][col] != board.get_none()):
+        if (not (OthelloLogic.valid_row(board, row))) or (not (OthelloLogic.valid_col(board, col))) or (board.get_game_state()[row][col] != board.get_none()):
             raise InvalidInputException()
 
-        dices_to_flip = OthelloLogic.valid_moves(row, col)
+        dices_to_flip = OthelloLogic.valid_moves(board, row, col)
+
+        print("dices_to_flip ", dices_to_flip)
 
         if len(dices_to_flip) == 0:
             raise InvalidInputException()
@@ -121,21 +123,21 @@ class OthelloLogic(GameLogic):
         """ Will check if the game is over and return True if the game is over
             if there is no move for current and next player, otherwise False. """
 
-        if len(OthelloLogic.all_valid_moves()) != 0:
+        if len(OthelloLogic.all_valid_moves(board)) != 0:
 
             return False
 
-        OthelloLogic.switch_Turn()
+        OthelloLogic.switch_Turn(board)
 
-        if len(OthelloLogic.all_valid_moves()) == 0:
+        if len(OthelloLogic.all_valid_moves(board)) == 0:
 
-            OthelloLogic.switch_Turn()
+            OthelloLogic.switch_Turn(board)
 
             return True
 
         else:
 
-            OthelloLogic.switch_Turn()
+            OthelloLogic.switch_Turn(board)
 
             return False
 

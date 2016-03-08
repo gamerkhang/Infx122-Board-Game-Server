@@ -38,7 +38,7 @@ class TCPServer(socketserver.BaseRequestHandler):
                 self._auto_player(str_data, conn)
             elif "SEND_LIST" in str_data:
                 self._current_players(str_data, conn)
-            elif "PLAY" in str_data():
+            elif "PLAY" in str_data:
                 self.play_game(str_data, conn)
 
             # else:
@@ -148,6 +148,7 @@ class TCPServer(socketserver.BaseRequestHandler):
         data = data.split('@')
         current_game_id = data[1]
         current_move = data[2:]
+        print("current_move inside server ", current_move)
         connection1 = conn
         global current_games
         for con in current_games[current_game_id].get_connections():
@@ -165,7 +166,7 @@ class TCPServer(socketserver.BaseRequestHandler):
         try:
             current_game_logic.make_move(current_game_board, current_move)
 
-            self.send_data_to_connection(connection1, "VALID_MOVE")
+            #self.send_data_to_connection(connection1, "VALID_MOVE")
 
             move = ""
             for row in range(current_game_board.get_num_rows()):
