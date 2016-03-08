@@ -12,7 +12,7 @@ wait_list = dict()
 current_games = dict()
 
 
-class TCPServer(socketserver.BaseRequestHandler):
+class Server(socketserver.BaseRequestHandler):
 
     global all_saved_profiles
     global wait_list
@@ -216,7 +216,7 @@ if __name__ == '__main__':
     HOST, PORT = "localhost", 9999
 
     # Create the server, binding to localhost on port 9999
-    server = socketserver.ThreadingTCPServer((HOST, PORT), TCPServer)
+    server = socketserver.ThreadingTCPServer((HOST, PORT), Server)
 
     print("~SERVER HAS STARTED\n")
 
