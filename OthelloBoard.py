@@ -165,3 +165,4 @@ class OthelloBoard(Board):
             self._turn == self._WHITE
         else:
             self._turn == self._BLACK
+

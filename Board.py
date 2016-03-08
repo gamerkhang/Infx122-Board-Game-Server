@@ -4,9 +4,6 @@ class Board(object):
     def get_game_state(self) -> [[str]]:
         pass
 
-    def set_first_player(self, user_input: str) -> None:
-        pass
-
     def get_num_rows(self) -> int:
         pass
 
@@ -32,6 +29,9 @@ class Board(object):
         pass
 
     def get_score(self, player: str) -> int:
+        pass
+
+    def switch_Turn(self) -> None:
         pass
 
 
