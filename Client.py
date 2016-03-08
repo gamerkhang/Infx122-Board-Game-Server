@@ -15,7 +15,7 @@ class Client:
         self.client_socket = socket(AF_INET, SOCK_STREAM)
         self.client_socket.connect(self.address)
         self.username = ""
-        self.game = ""
+        self.game_type = ""
         self.game_id = ""
         self.game_ui = GameUI()
         self.game_board = Board()
@@ -77,13 +77,13 @@ class Client:
         user_input = ClientUI.select_game()
 
         if user_input.upper() == "C":
-            self.game = "Connect4"
+            self.game_type = "Connect4"
             self.send_data(Protocol.new_game(self.username, "Connect4"))
         elif user_input.upper() == "O":
-            self.game = "Othello"
+            self.game_type = "Othello"
             self.send_data(Protocol.new_game(self.username, "Othello"))
         else:
-            self.game = "Battleship"
+            self.game_type = "Battleship"
             self.send_data(Protocol.new_game(self.username, "Battleship"))
 
         _expected_answer = self.receive_data()
@@ -150,17 +150,17 @@ class Client:
                 OthelloGameUI.print_turn(self.game_board)
 
     def set_game_board(self):
-        if self.game == "Othello":
+        if self.game_type == "Othello":
             self.game_board = OthelloBoard()
-        # elif self.game == "Connect4":
+        # elif self.game_type == "Connect4":
         #     self.game_board = Connect4Board()
         # else:
         #     self.game_board = BattleshipBoard()
 
     def set_game_ui(self):
-        if self.game == "Othello":
+        if self.game_type == "Othello":
             self.game_ui = OthelloGameUI()
-        # elif self.game == "Connect4":
+        # elif self.game_type == "Connect4":
         #     self.game_board = Connect4GameUI()
         # else:
         #     self.game_board = BattleshipGameUI()
