@@ -3,6 +3,8 @@ from CurrentGames import CurrentGames
 from Profile import Profile
 import socketserver
 from OthelloBoard import OthelloBoard
+from OthelloLogic import OthelloLogic
+from GameLogic import GameLogic
 
 
 all_saved_profiles = []
@@ -36,6 +38,9 @@ class TCPServer(socketserver.BaseRequestHandler):
                 self._auto_player(str_data, conn)
             elif "SEND_LIST" in str_data:
                 self._current_players(str_data, conn)
+            elif "PLAY" in str_data():
+                self.play_game(str_data, conn)
+
             # else:
             #     print("from here")
             #
@@ -139,8 +144,61 @@ class TCPServer(socketserver.BaseRequestHandler):
             pass
             #return BattleshipBoard()
 
-    def play_game(self):
-        pass
+    def play_game(self, data, conn):
+        data = data.split('@')
+        current_game_id = data[1]
+        current_move = data[2:]
+        connection1 = conn
+        global current_games
+        for con in current_games[current_game_id].get_connections():
+            if con != connection1:
+                connection2 = con
+        current_game_name = current_games[current_game_id].get_game()
+        current_game_board = current_games[current_game_id].get_board()
+        current_game_logic = GameLogic()
+        if current_game_name == "Othello":
+            current_game_logic = OthelloLogic()
+        # elif current_game_name == "Connect4":
+        #     current_game_logic = "Connect4Logic()"
+        # elif current_game_name == "Battleship":
+        #     current_game_logic = "BattleshipLogic()"
+        try:
+            current_game_logic.make_move(current_game_board, current_move)
+
+            self.send_data_to_connection(connection1, "VALID_MOVE")
+
+            move = ""
+            for row in range(current_game_board.get_num_rows()):
+                for col in range(current_game_board.get_num_columns()):
+                    move += "@" + current_game_board[row][col]
+
+            self.send_data_to_connection((connection1, "UPDATE" + move))
+            self.send_data_to_connection((connection2, "UPDATE" + move))
+
+            current_game_logic.switch_Turn(current_game_board)
+            self.send_data_to_connection(connection1, "SWITCH_PLAYER")
+            self.send_data_to_connection(connection2, "SWITCH_PLAYER")
+
+            if current_game_logic.game_is_over(current_game_board):
+                self.send_data_to_connection(connection1, "There is a Winner")
+                self.send_data_to_connection(connection1, "There is a Winner")
+            else:
+                if len(current_game_logic.all_valid_moves()) != 0:
+                    self.send_data_to_connection(connection1, "WAIT")
+                    self.send_data_to_connection(connection2, "READY")
+                else:
+                    self.send_data_to_connection(connection2, "There is no move for you. Changing the turn.")
+
+                    current_game_logic.switch_Turn(current_game_board)
+                    self.send_data_to_connection(connection1, "SWITCH_PLAYER")
+                    self.send_data_to_connection(connection2, "SWITCH_PLAYER")
+
+                    self.send_data_to_connection(connection1, "READY")
+                    self.send_data_to_connection(connection2, "WAIT")
+
+        except:
+            self.send_data_to_connection(conn, "INVALID_MOVE")
+
 
     def _current_players(self, str_data, conn):
         thelist = ""

@@ -1,6 +1,11 @@
 from socket import *
 from Protocol import Protocol
+from Board import Board
+from OthelloBoard import OthelloBoard
 from Client_UI import ClientUI
+from GameUI import GameUI
+from OthelloGameUI import OthelloGameUI
+
 
 
 class Client:
@@ -12,7 +17,9 @@ class Client:
         self.username = ""
         self.game = ""
         self.game_id = ""
-
+        self.game_ui = GameUI()
+        self.game_board = Board()
+        self.player_key = ""
         # *********************************
         print("Client connected...")
 
@@ -104,7 +111,7 @@ class Client:
 
             self.send_data(Protocol.select_player(self.username, player_name))
 
-    def play(self):
+    def setup_game(self):
         _expected_answer = self.receive_data()
 
         if _expected_answer == "WAIT":
@@ -124,16 +131,83 @@ class Client:
             self.game_id = data[1]
             data = data[1].split("_")
 
+            self.set_game_board()
+            self.set_game_ui()
+
             if data[0] == self.username:
-                print("username: ", self.username, "  >>> I am the 1st player")
+                self.player_key = self.game_board.get_player_turn()
                 print("Game_ID: ", self.game_id)
+                print("username: ", self.username, "  >>> 1st player >>> Your annotation is: ", self.player_key)
+                OthelloGameUI.print_scores(self.game_board)
+                OthelloGameUI.print_board(self.game_board)
+                OthelloGameUI.print_turn(self.game_board)
             else:
-                print("username: ", self.username, "  >>> I am the 2nd player")
+                self.player_key = self.game_board.get_next_player()
                 print("Game_ID: ", self.game_id)
+                print("username: ", self.username, "  >>> 2nd player >>> Your annotation is: ", self.player_key)
+                OthelloGameUI.print_scores(self.game_board)
+                OthelloGameUI.print_board(self.game_board)
+                OthelloGameUI.print_turn(self.game_board)
 
+    def set_game_board(self):
+        if self.game == "Othello":
+            self.game_board = OthelloBoard()
+        # elif self.game == "Connect4":
+        #     self.game_board = Connect4Board()
+        # else:
+        #     self.game_board = BattleshipBoard()
 
+    def set_game_ui(self):
+        if self.game == "Othello":
+            self.game_ui = OthelloGameUI()
+        # elif self.game == "Connect4":
+        #     self.game_board = Connect4GameUI()
+        # else:
+        #     self.game_board = BattleshipGameUI()
 
+    def play_game(self):
+        if self.player_key == self.game_board.get_player_turn():
+            move = self.game_ui.make_move(self.game_board)
 
+            self.send_data(Protocol.select_player(self.game_id, str(move[0]) + "@" + str(move[1])))
+
+        _expected_answer = self.receive_data()
+        #while _expected_answer == "":
+        #     _expected_answer = self.receive_data()
+        print(_expected_answer)
+        #
+        # while _expected_answer != "There is a Winner":
+        #
+        #     if _expected_answer == "VALID_MOVE":
+        #             pass
+        #     elif "UPDATE" in _expected_answer:
+        #         count = 0
+        #         temp = _expected_answer.split('@')
+        #         del temp[0]
+        #         for row in range(self.game_board.get_num_rows()):
+        #             for col in range(self.game_board.get_num_columns()):
+        #                 self.game_board[row][col] = temp[count]
+        #                 count += 1
+        #     elif "SWITCH_PLAYER" in _expected_answer:
+        #         self.game_board.switch_Turn()
+        #     elif "READY" in _expected_answer():
+        #         self.game_ui.make_move(self.game_board)
+        #     elif _expected_answer == "SWITCH_PLAYER":
+        #         self.game_ui.make_move(self.game_board)
+        #     elif "WAIT" in _expected_answer:
+        #         pass
+        #     elif "There is no move" in _expected_answer:
+        #         print(_expected_answer)
+        #     elif _expected_answer == "INVALID_MOVE":
+        #         print("INVALID_MOVE")
+        #         self.game_ui.make_move(self.game_board)
+        #
+        #     _expected_answer = self.receive_data()
+        #     OthelloGameUI.print_scores(self.game_board)
+        #     OthelloGameUI.print_board(self.game_board)
+        #     OthelloGameUI.print_turn(self.game_board)
+
+        #print(_expected_answer)
 
     def chat(self):
 
@@ -200,5 +274,6 @@ if __name__ == '__main__':
     client.welcome()
     client.select_game()
     client.select_player()
-    client.play()
-    client.chat()
+    client.setup_game()
+    client.play_game()
+    #client.chat()

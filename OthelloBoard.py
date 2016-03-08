@@ -102,6 +102,14 @@ class OthelloBoard(Board):
 
         return self._turn
 
+    def get_next_player(self) ->str:
+
+        if self._turn == self._WHITE:
+
+            return self._BLACK
+
+        return self._WHITE
+
     def get_score(self, player: str) -> int:
         """ Will the take a string representing a player ('B' for black and 'W' for White)
             and will return the that players. """
@@ -144,3 +152,11 @@ class OthelloBoard(Board):
                 return 'WINNER is Black Player.'
 
         return 'NO WINNER. Both Players have the same SCORE!!!!'
+
+    def switch_Turn(self) -> None:
+        """ This method will change the player's turn. """
+
+        if self._turn == self._BLACK:
+            self._turn == self._WHITE
+        else:
+            self._turn == self._BLACK

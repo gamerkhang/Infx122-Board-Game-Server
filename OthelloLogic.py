@@ -1,5 +1,5 @@
 
-import GameLogic
+from GameLogic import GameLogic
 from GameException import *
 from OthelloBoard import OthelloBoard
 
@@ -95,9 +95,12 @@ class OthelloLogic(GameLogic):
         return all_valid_moves
 
     @staticmethod
-    def make_move(board: OthelloBoard, row: int, col: int) -> None:
+    def make_move(board: OthelloBoard, move:[str]) -> None:
         """ It will take user's move and update the game state. The method will raise
             and exception if the move is not valid."""
+
+        row = int(move[0])
+        col = int(move[1])
 
         if (not (OthelloLogic.valid_row(row))) or (not (OthelloLogic.valid_col(col))) or (board.get_game_state()[row][col] != board.get_none()):
             raise InvalidInputException()

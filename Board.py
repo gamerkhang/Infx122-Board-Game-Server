@@ -22,6 +22,9 @@ class Board(object):
     def get_player_turn(self) -> str:
         pass
 
+    def get_next_player(self) ->str:
+        pass
+
     def set_first_player(self, user_input: str) -> None:
         pass
 

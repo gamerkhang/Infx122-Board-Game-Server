@@ -28,3 +28,7 @@ class Protocol:
     @staticmethod
     def send_list(username):
         return "SEND_LIST@" + username
+
+    @staticmethod
+    def play_game(game_id, move):
+        return "PLAY@" + game_id + "@" + move
