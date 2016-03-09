@@ -166,15 +166,17 @@ class Server(socketserver.BaseRequestHandler):
         try:
             current_game_logic.make_move(current_game_board, current_move)
 
-            #self.send_data_to_connection(connection1, "VALID_MOVE")
+            self.send_data_to_connection(connection1, "VALID_MOVE")
 
             move = ""
             for row in range(current_game_board.get_num_rows()):
                 for col in range(current_game_board.get_num_columns()):
-                    move += "@" + current_game_board[row][col]
+                    move += "@" + current_game_board.get_game_state()[row][col]
+            move += "@"
+            print("move from server ", move)
 
-            self.send_data_to_connection((connection1, "UPDATE" + move))
-            self.send_data_to_connection((connection2, "UPDATE" + move))
+            self.send_data_to_connection(connection1, "UPDATE" + move)
+            self.send_data_to_connection(connection2, "UPDATE" + move)
 
             current_game_logic.switch_Turn(current_game_board)
             self.send_data_to_connection(connection1, "SWITCH_PLAYER")
@@ -184,7 +186,7 @@ class Server(socketserver.BaseRequestHandler):
                 self.send_data_to_connection(connection1, "There is a Winner")
                 self.send_data_to_connection(connection1, "There is a Winner")
             else:
-                if len(current_game_logic.all_valid_moves()) != 0:
+                if len(current_game_logic.all_valid_moves(current_game_board)) != 0:
                     self.send_data_to_connection(connection1, "WAIT")
                     self.send_data_to_connection(connection2, "READY")
                 else:
@@ -198,6 +200,7 @@ class Server(socketserver.BaseRequestHandler):
                     self.send_data_to_connection(connection2, "WAIT")
 
         except:
+            print("from here in server")
             self.send_data_to_connection(conn, "INVALID_MOVE")
 
 

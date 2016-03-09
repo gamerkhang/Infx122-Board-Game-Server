@@ -112,11 +112,20 @@ class OthelloLogic(GameLogic):
         if len(dices_to_flip) == 0:
             raise InvalidInputException()
 
+        print("othello logic from here 11")
+
         board.get_game_state()[row][col] = board.get_player_turn()
 
-        for index in dices_to_flip:
+        print("othello logic from here 22")
 
+        for index in dices_to_flip:
+            print(board.get_game_state()[index[0]][index[1]])
+            print(board.get_player_turn())
             board.get_game_state()[index[0]][index[1]] = board.get_player_turn()
+
+        print("othello logic from here 3333")
+
+
 
     @staticmethod
     def game_is_over(board: OthelloBoard) -> bool:

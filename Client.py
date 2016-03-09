@@ -180,27 +180,34 @@ class Client:
         while _expected_answer != "There is a Winner":
 
             if "UPDATE" in _expected_answer:
+                print("UPDATE from client")
                 count = 0
                 temp = _expected_answer.split('@')
                 del temp[0]
+                print("Before update", self.game_board.get_game_state())
                 for row in range(self.game_board.get_num_rows()):
                     for col in range(self.game_board.get_num_columns()):
-                        self.game_board[row][col] = temp[count]
+                        self.game_board.get_game_state()[row][col] = temp[count]
                         count += 1
+                print("after update", self.game_board.get_game_state())
             elif "READY" in _expected_answer:
+                print("READY from client")
                 move = self.game_ui.make_move(self.game_board)
                 self.send_data(Protocol.play_game(self.game_id, str(move[0]) + "@" + str(move[1])))
             elif _expected_answer == "SWITCH_PLAYER":
+                print("SWITCH_PLAYER from client")
                 self.game_board.switch_Turn()
             elif "WAIT" in _expected_answer:
+                print("WAIT from client")
                 pass
             elif "There is no move" in _expected_answer:
                 print(_expected_answer)
             elif _expected_answer == "INVALID_MOVE":
+                print("INVALID_MOVE from client")
                 move = self.game_ui.make_move(self.game_board)
                 self.send_data(Protocol.play_game(self.game_id, str(move[0]) + "@" + str(move[1])))
             else:
-                pass
+                print("else from client")
 
             _expected_answer = self.receive_data()
             OthelloGameUI.print_scores(self.game_board)
