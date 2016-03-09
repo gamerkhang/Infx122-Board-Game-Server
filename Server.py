@@ -186,7 +186,7 @@ class Server(socketserver.BaseRequestHandler):
 
             if current_game_logic.game_is_over(current_game_board):
                 self.send_data_to_connection(connection1, "GAME_OVER")
-                self.send_data_to_connection(connection1, "GAME_OVER")
+                self.send_data_to_connection(connection2, "GAME_OVER")
             else:
                 if len(current_game_logic.all_valid_moves(current_game_board)) != 0:
                     self.send_data_to_connection(connection1, "WAIT")
