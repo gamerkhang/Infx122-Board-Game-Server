@@ -90,7 +90,7 @@ class OthelloBoard(Board):
             Method will raise an exception if the parameter is problematic
             for game logic and class. """
 
-        if user_input in [ 'B' , 'W' ]:
+        if user_input in ['B', 'W']:
 
             self._turn = user_input
 
@@ -162,7 +162,7 @@ class OthelloBoard(Board):
         """ This method will change the player's turn. """
 
         if self._turn == self._BLACK:
-            self._turn == self._WHITE
+            self._turn = self._WHITE
         else:
-            self._turn == self._BLACK
+            self._turn = self._BLACK
 

@@ -123,7 +123,7 @@ class OthelloGameUI(GameUI):
     def print_turn(board: OthelloBoard) -> None:
         """It will print current player. """
 
-        if board.get_player_turn() == 'B':
+        if board.get_player_turn() == board.get_black():
             print('\nBLACK\'s Turn.')
         else:
             print('\nWHITE\'s Turn.')

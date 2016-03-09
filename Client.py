@@ -78,13 +78,17 @@ class Client:
 
         if user_input.upper() == "C":
             self.game_type = "Connect4"
-            self.send_data(Protocol.new_game(self.username, "Connect4"))
+            # self.send_data(Protocol.new_game(self.username, "Connect4"))
         elif user_input.upper() == "O":
             self.game_type = "Othello"
-            self.send_data(Protocol.new_game(self.username, "Othello"))
+            # self.send_data(Protocol.new_game(self.username, "Othello"))
         else:
             self.game_type = "Battleship"
-            self.send_data(Protocol.new_game(self.username, "Battleship"))
+            # self.send_data(Protocol.new_game(self.username, "Battleship"))
+
+    def _set_game_in_server(self):
+
+        self.send_data(Protocol.new_game(self.username, self.game_type))
 
         _expected_answer = self.receive_data()
 
@@ -98,8 +102,10 @@ class Client:
         user_input = ClientUI.select_player()
 
         if user_input.upper() == "A":
+            self._set_game_in_server()
             self.send_data(Protocol.auto_player(self.username))
         else:
+            self._set_game_in_server()
             self.send_data(Protocol.send_list(self.username))
 
             player_list = self.receive_data().split('@')
@@ -167,17 +173,19 @@ class Client:
 
     def play_game(self):
         if self.player_key == self.game_board.get_player_turn():
-
+            print("\nIt's your turn. Please make your move!!!!")
             move = self.game_ui.make_move(self.game_board)
             self.send_data(Protocol.play_game(self.game_id, str(move[0]) + "@" + str(move[1])))
+        else:
+            print("\nIt is not your turn. Please wait for the next player to make his/her move.")
+
 
         _expected_answer = self.receive_data()
 
         while _expected_answer == "":
             _expected_answer = self.receive_data()
 
-
-        while _expected_answer != "There is a Winner":
+        while _expected_answer != "GAME_OVER":
 
             if "UPDATE" in _expected_answer:
                 # print("UPDATE from client")
@@ -196,34 +204,39 @@ class Client:
                 # print("READY from client")
                 OthelloGameUI.print_scores(self.game_board)
                 OthelloGameUI.print_board(self.game_board)
+                # print(self.game_board.get_player_turn())
                 OthelloGameUI.print_turn(self.game_board)
+                print("\nIt's your turn. Please make your move!!!!")
                 move = self.game_ui.make_move(self.game_board)
                 self.send_data(Protocol.play_game(self.game_id, str(move[0]) + "@" + str(move[1])))
             
             elif _expected_answer == "SWITCH_PLAYER":
                 #print("SWITCH_PLAYER from client")
+                # print(self.game_board.get_player_turn())
+                # print("Before SWITCH_PLAYER", self.game_board.get_player_turn())
                 self.game_board.switch_Turn()
+                # print("After SWITCH_PLAYER", self.game_board.get_player_turn())
             
             elif "WAIT" in _expected_answer:
                 # print("WAIT from client")
                 OthelloGameUI.print_scores(self.game_board)
                 OthelloGameUI.print_board(self.game_board)
                 OthelloGameUI.print_turn(self.game_board)
+                print("\nIt is not your turn. Please wait for the next player to make his/her move.")
             
-            elif "There is no move" in _expected_answer:
-                print(_expected_answer, " inside logic")
+            elif "NO_MOVE_FOR_YOU" in _expected_answer:
+                print("\nThere is no move for you. Changing the turn.")
             
             elif _expected_answer == "INVALID_MOVE":
-                # print("INVALID_MOVE from client")
+                print("Invalid move. Please try it again !!!")
                 move = self.game_ui.make_move(self.game_board)
                 self.send_data(Protocol.play_game(self.game_id, str(move[0]) + "@" + str(move[1])))
             else:
-                print("else from client ", _expected_answer)
+                print("Else from client ", _expected_answer)
 
             _expected_answer = self.receive_data()
 
-
-        print(_expected_answer)
+        print(self.game_board.winning_player())
 
     def chat(self):
 

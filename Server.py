@@ -173,24 +173,26 @@ class Server(socketserver.BaseRequestHandler):
                 for col in range(current_game_board.get_num_columns()):
                     move += "@" + current_game_board.get_game_state()[row][col]
             move += "@"
-            print("move from server ", move)
+            print("Move from server ", move)
 
             self.send_data_to_connection(connection1, "UPDATE" + move)
             self.send_data_to_connection(connection2, "UPDATE" + move)
 
+            print("before switch in server", current_game_board.get_player_turn())
             current_game_logic.switch_Turn(current_game_board)
+            print("After switch in server", current_game_board.get_player_turn())
             self.send_data_to_connection(connection1, "SWITCH_PLAYER")
             self.send_data_to_connection(connection2, "SWITCH_PLAYER")
 
             if current_game_logic.game_is_over(current_game_board):
-                self.send_data_to_connection(connection1, "There is a Winner")
-                self.send_data_to_connection(connection1, "There is a Winner")
+                self.send_data_to_connection(connection1, "GAME_OVER")
+                self.send_data_to_connection(connection1, "GAME_OVER")
             else:
                 if len(current_game_logic.all_valid_moves(current_game_board)) != 0:
                     self.send_data_to_connection(connection1, "WAIT")
                     self.send_data_to_connection(connection2, "READY")
                 else:
-                    self.send_data_to_connection(connection2, "There is no move for you. Changing the turn.")
+                    self.send_data_to_connection(connection2, "NO_MOVE_FOR_YOU")
 
                     current_game_logic.switch_Turn(current_game_board)
                     self.send_data_to_connection(connection1, "SWITCH_PLAYER")
@@ -202,7 +204,6 @@ class Server(socketserver.BaseRequestHandler):
         except:
             print("from here in server")
             self.send_data_to_connection(conn, "INVALID_MOVE")
-
 
     def _current_players(self, str_data, conn):
         thelist = ""
