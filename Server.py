@@ -41,7 +41,9 @@ class Server(socketserver.BaseRequestHandler):
             elif "AUTO" in str_data:
                 self._auto_player(str_data, conn)
             elif "SEND_LIST" in str_data:
-                self._current_players(str_data, conn)
+                self._send_wait_list(str_data, conn)
+            elif "PLAY_WITH" in str_data:
+                self._play_with(str_data, conn)
             elif "PLAY" in str_data:
                 self.play_game(str_data, conn)
 
@@ -158,13 +160,12 @@ class Server(socketserver.BaseRequestHandler):
             if con != connection1:
                 connection2 = con
         current_game_name = current_games[current_game_id].get_game()
-        print(current_game_name)
         current_game_board = current_games[current_game_id].get_board()
         current_game_logic = GameLogic()
         if current_game_name == "Othello":
             current_game_logic = OthelloLogic()
         elif current_game_name == "Connect4":
-             current_game_logic = Connect4Logic()
+            current_game_logic = Connect4Logic()
         # elif current_game_name == "Battleship":
         #     current_game_logic = "BattleshipLogic()"
         try:
@@ -182,14 +183,11 @@ class Server(socketserver.BaseRequestHandler):
             self.send_data_to_connection(connection1, "UPDATE" + move)
             self.send_data_to_connection(connection2, "UPDATE" + move)
 
-            print("before switch in server", current_game_board.get_player_turn())
             current_game_logic.switch_Turn(current_game_board)
-            print("After switch in server", current_game_board.get_player_turn())
+
             self.send_data_to_connection(connection1, "SWITCH_PLAYER")
             self.send_data_to_connection(connection2, "SWITCH_PLAYER")
-            
-            print(current_game_logic.game_is_over(current_game_board))
-            print(len(current_game_logic.all_valid_moves(current_game_board)))
+
             if current_game_logic.game_is_over(current_game_board):
                 self.send_data_to_connection(connection1, "GAME_OVER")
                 self.send_data_to_connection(connection2, "GAME_OVER")
@@ -208,18 +206,48 @@ class Server(socketserver.BaseRequestHandler):
                     self.send_data_to_connection(connection2, "WAIT")
 
         except:
-            print("from here in server")
+            print("INVALID_MOVE Exception happened inside server.")
             self.send_data_to_connection(conn, "INVALID_MOVE")
 
-    def _current_players(self, str_data, conn):
-        thelist = ""
-        recv = str_data.split('@')
-        cur = recv[1]
-        for prof in all_saved_profiles:
-            if cur != prof.get_username():
-                thelist += prof.get_username()
-                thelist += "@"
-        self.send_data_to_connection(conn, thelist)
+    def _send_wait_list(self, str_data, conn):
+        match_list = "MATCH_LIST"
+        data = str_data.split('@')
+        current_player = data[1]
+        player_game = data[2]
+        global wait_list
+        for player in wait_list.keys():
+            if player_game == wait_list[player][0] and current_player != player:
+                match_list += "@"
+                match_list += player
+
+        self.send_data_to_connection(conn, match_list)
+
+    def _play_with(self, str_data, conn):
+        data = str_data.split("@")
+        first_player = data[1]
+        global wait_list
+        game_to_play = wait_list[first_player][0]
+        second_player = data[2]
+        if second_player in wait_list.keys():
+            global current_games
+            current_games[first_player + "_" + second_player] = CurrentGames(game_to_play, first_player, second_player, RemoteClient(conn), wait_list[second_player][1], self._create_board(game_to_play))
+            del wait_list[first_player]
+            del wait_list[second_player]
+            print("wait_list ", wait_list)  # For debugging
+            print("current_games", current_games)   # For debugging
+            self.send_data_to_connection(conn, "PLAYER_MATCHED")
+
+            conns = current_games[first_player + "_" + second_player].get_connections()
+
+            #for con in current_games[first_player + "_" + second_player].get_connections():
+            self.send_data_to_connection(conns[1], "READY")
+            self.send_data_to_connection(conns[1], "GAME-ID@" + first_player + "_" + second_player)
+
+            self.send_data_to_connection(conns[0], "READY")
+            self.send_data_to_connection(conns[0], "GAME-ID@" + first_player + "_" + second_player)
+
+        else:
+            self.send_data_to_connection(conn, "PLAYER_NOT_EXIST_ANYMORE")
 
 if __name__ == '__main__':
 

@@ -108,16 +108,41 @@ class Client:
             self.send_data(Protocol.auto_player(self.username))
         else:
             self._set_game_in_server()
-            self.send_data(Protocol.send_list(self.username))
 
-            player_list = self.receive_data().split('@')
+            self.send_data(Protocol.send_list(self.username, self.game_type))
 
-            for index in range(len(player_list)-1):
-                ClientUI.print_detail(str(index) + " " + player_list[index])
+            data = self.receive_data().strip()
 
-            player_name = ClientUI.get_user_input("Enter the name of player you would like to play with: ")
+            player_list = data.split('@')
 
-            self.send_data(Protocol.select_player(self.username, player_name))
+            del player_list[0]
+
+            print("\nPlease insert the username that you would like to play with:")
+            print("------------------------------------------------------------")
+            for index in range(len(player_list)):
+                ClientUI.print_detail(str(index + 1) + " -> " + player_list[index])
+
+            print("----------------------------------------------------------")
+            player_name = ClientUI.get_user_input("\nEnter the username: ")
+
+            self.send_data(Protocol.play_with(self.username, player_name))
+
+            _expected_answer = self.receive_data()
+
+            # while True:
+            #     if _expected_answer == "":
+            #         _expected_answer = self.receive_data()
+            #     else:
+            #         break
+
+            if _expected_answer == "PLAYER_MATCHED":
+                print("PLAYER_MATCHED from client ", _expected_answer)
+            elif _expected_answer == "PLAYER_NOT_EXIST_ANYMORE":
+                print("Player either disconnected or playing with another user.")
+                print("Please try it again !!!")
+                self.select_player()
+            else:
+                ClientUI.print_detail("Huge error. Server sent back 1>>> " + _expected_answer)
 
     def setup_game(self):
         _expected_answer = self.receive_data()
