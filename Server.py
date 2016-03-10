@@ -4,6 +4,10 @@ from Profile import Profile
 import socketserver
 from OthelloBoard import OthelloBoard
 from OthelloLogic import OthelloLogic
+
+from Connect4Board import Connect4Board
+from Connect4Logic import Connect4Logic
+
 from GameLogic import GameLogic
 
 
@@ -136,8 +140,7 @@ class Server(socketserver.BaseRequestHandler):
 
     def _create_board(self, game: str):
         if game == "Connect4":
-            pass
-            #return Connect4Board()
+            return Connect4Board()
         elif game == "Othello":
             return OthelloBoard()
         else:
@@ -155,12 +158,13 @@ class Server(socketserver.BaseRequestHandler):
             if con != connection1:
                 connection2 = con
         current_game_name = current_games[current_game_id].get_game()
+        print(current_game_name)
         current_game_board = current_games[current_game_id].get_board()
         current_game_logic = GameLogic()
         if current_game_name == "Othello":
             current_game_logic = OthelloLogic()
-        # elif current_game_name == "Connect4":
-        #     current_game_logic = "Connect4Logic()"
+        elif current_game_name == "Connect4":
+             current_game_logic = Connect4Logic()
         # elif current_game_name == "Battleship":
         #     current_game_logic = "BattleshipLogic()"
         try:
@@ -183,7 +187,9 @@ class Server(socketserver.BaseRequestHandler):
             print("After switch in server", current_game_board.get_player_turn())
             self.send_data_to_connection(connection1, "SWITCH_PLAYER")
             self.send_data_to_connection(connection2, "SWITCH_PLAYER")
-
+            
+            print(current_game_logic.game_is_over(current_game_board))
+            print(len(current_game_logic.all_valid_moves(current_game_board)))
             if current_game_logic.game_is_over(current_game_board):
                 self.send_data_to_connection(connection1, "GAME_OVER")
                 self.send_data_to_connection(connection2, "GAME_OVER")

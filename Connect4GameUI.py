@@ -1,25 +1,24 @@
 
 from GameUI import GameUI
-from OthelloBoard import OthelloBoard
+from Connect4Board import Connect4Board
 from GameException import *
 
-class OthelloGameUI(GameUI):
+class Connect4GameUI(GameUI):
 
     @staticmethod
-    def make_move(board: OthelloBoard) -> "(row, col)":
-        """ It will take an object of class Othello and promote the user for his/her
+    def make_move(board: Connect4Board) -> "(row, col)":
+        """ It will take an object of class connect4 and promote the user for his/her
         move and make the move. """
 
         while True:
 
             try:
 
-                print('\nPlease Specify your move. Enter the number of row and columns of a cell on the board.')
+                print('\nPlease Specify your move. Enter the number column of a cell on the board.')
                 print('-'*85)
-
-                row = OthelloGameUI.move_row(board)
-                col = OthelloGameUI.move_col(board)
-
+                
+                col = Connect4GameUI.move_col(board)
+                row = Connect4GameUI._get_valid_row(board, col)
                 return row, col
 
                 break
@@ -27,33 +26,15 @@ class OthelloGameUI(GameUI):
             except:
                 print('\nInvalid move!!!')
                 print('Please try it again.')
+                
+    @staticmethod           
+    def _get_valid_row(board: Connect4Board, col: int) -> None:
+         for row in range(board.get_num_rows()):
+            if (board.get_game_state()[board.get_num_rows() - row - 1][col] in (" ", None)):
+                return board.get_num_rows() - row - 1
 
     @staticmethod
-    def move_row(board: OthelloBoard) -> int:
-        """ It will take an object of class Othello and promote the user for the
-        the row number of his/her move and return it. """
-
-        while True:
-
-            try:
-
-                user_input = (int(input('Please specify the ROW number.\nPlease enter an integer between 1 to {} for number of the row: '.format(board.get_num_rows())))) - 1
-
-                #if game_state.valid_row(user_input):
-                if 0 <= user_input < board.get_num_rows():
-                    return user_input
-
-                else:
-
-                    raise InvalidInputException()
-
-            except:
-
-                print('\nInvalid Input!!!')
-                print('Please try it again.\n')
-
-    @staticmethod
-    def move_col(board: OthelloBoard) -> int:
+    def move_col(board: Connect4Board) -> int:
         """ It will take an object of class Othello and promote the user for the
             the column number of his/her move and return it. """
 
@@ -64,7 +45,7 @@ class OthelloGameUI(GameUI):
                 user_input = (int(input('Please specify the COLUMN number.\nPlease enter an integer between 1 to {} for number of the column: '.format(board.get_num_columns())))) - 1
 
                 #if game_state.valid_col(user_input):
-                if 0 <= user_input < board.get_num_columns():
+                if (Connect4GameUI._get_valid_row(board, int(user_input)) != None and 0 <= user_input < board.get_num_columns()):
 
                     return user_input
 
@@ -78,17 +59,17 @@ class OthelloGameUI(GameUI):
                 print('Please try it again.\n')
 
     @staticmethod
-    def print_scores(board: OthelloBoard) -> None:
+    def print_scores(board: Connect4Board) -> None:
         """ It will print scores of players. """
-
-        print('\n******************************')
-        print('************SCORES************')
-        print('******************************')
-        print('  BLACK = {}   &   WHITE = {} '.format(board.get_score('B'), board.get_score('W')))
-        print('******************************\n')
+        print('')
+        # print('\n******************************')
+        # print('************SCORES************')
+        # print('******************************')
+        # print('  BLACK = {}   &   WHITE = {} '.format(board.get_score('B'), board.get_score('W')))
+        # print('******************************\n')
 
     @staticmethod
-    def print_board(board: OthelloBoard) -> None:
+    def print_board(board: Connect4Board) -> None:
         """ It will print the current board. """
 
         h_line = '   ' + ' ---' * board.get_num_columns() + ' '
@@ -120,10 +101,10 @@ class OthelloGameUI(GameUI):
         print(winner)
 
     @staticmethod
-    def print_turn(board: OthelloBoard) -> None:
+    def print_turn(board: Connect4Board) -> None:
         """It will print current player. """
 
-        if board.get_player_turn() == board.get_black():
-            print('\nBLACK\'s Turn.')
+        if board.get_player_turn() == board.get_red():
+            print('\nRED\'s Turn.')
         else:
-            print('\nWHITE\'s Turn.')
+            print('\nYELLOW\'s Turn.')
