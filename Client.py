@@ -161,7 +161,7 @@ class Client:
         if self.game_type == "Othello":
             self.game_board = OthelloBoard()
         elif self.game_type == "Connect4":
-             self.game_board = Connect4Board()
+            self.game_board = Connect4Board()
         # else:
         #     self.game_board = BattleshipBoard()
 
@@ -169,7 +169,7 @@ class Client:
         if self.game_type == "Othello":
             self.game_ui = OthelloGameUI()
         elif self.game_type == "Connect4":
-             self.game_ui = Connect4GameUI()
+            self.game_ui = Connect4GameUI()
         # else:
         #     self.game_ui = BattleshipGameUI()
 
