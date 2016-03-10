@@ -202,7 +202,7 @@ class Client:
         if self.player_key == self.game_board.get_player_turn():
             print("\nIt's your turn. Please make your move!!!\nYour game annotation is: ", self.player_key)
             move = self.game_ui.make_move(self.game_board)
-            print(str(move[0])+' ------ '+str(move[1]))
+
             self.send_data(Protocol.play_game(self.game_id, str(move[0]) + "@" + str(move[1])))
         else:
             print("\nIt is not your turn. Please wait for the next player to make his/her move.")
