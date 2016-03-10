@@ -80,10 +80,10 @@ class Server(socketserver.BaseRequestHandler):
                 break
 
         if username_exist:
-            self.send_data_to_connection(conn, "INVALID_USERNAME")
-        else:
-            all_saved_profiles += [Profile(username)]
             self.send_data_to_connection(conn, "VALID_USERNAME")
+        else:
+            # all_saved_profiles += [Profile(username)]
+            self.send_data_to_connection(conn, "INVALID_USERNAME")
 
     def _new_user_handler(self, data, conn):
 
@@ -100,8 +100,8 @@ class Server(socketserver.BaseRequestHandler):
             self.send_data_to_connection(conn, "USERNAME_EXIST")
         else:
             all_saved_profiles += [Profile(username)]
-            global wait_list
-            wait_list[data[1]] = ("GAME_NOT_SET", RemoteClient(conn))
+            # global wait_list
+            # wait_list[data[1]] = ("GAME_NOT_SET", RemoteClient(conn))
             self.send_data_to_connection(conn, "VALID_USERNAME")
 
     def _new_game(self, data, conn):
