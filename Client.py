@@ -232,7 +232,8 @@ class Client:
                 move = self.game_ui.make_move(self.game_board)
                 self.send_data(Protocol.play_game(self.game_id, str(move[0]) + "@" + str(move[1])))
             else:
-                print("Else from client ", _expected_answer)
+                pass
+                # print("Else from client ", _expected_answer)
 
             _expected_answer = self.receive_data()
 
