@@ -12,8 +12,8 @@ class Connect4Board(Board):
         self._RED = 'R'
         self._YELLOW = 'Y'
 
-        self._BOARD_COLUMNS = 4
-        self._BOARD_ROWS = 4
+        self._BOARD_COLUMNS = 7
+        self._BOARD_ROWS = 6
 
         self._turn = self._RED
 
@@ -28,10 +28,12 @@ class Connect4Board(Board):
         #                    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
         #                    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
 
-        self.game_state = [[' ', ' ', ' ', ' '],
-                       [' ', ' ', ' ', ' '],
-                       [' ', ' ', ' ', ' '],
-                       [' ', ' ', ' ', ' ']]
+        self.game_state = [[' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                       [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                       [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+                       [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+					   [' ', ' ', ' ', ' ', ' ', ' ', ' '],
+					   [' ', ' ', ' ', ' ', ' ', ' ', ' ']]
 
     def get_none(self):
         return self._NONE
@@ -134,12 +136,12 @@ class Connect4Board(Board):
         returned.
         '''
         winner = None
-        for col in range(self._BOARD_COLUMNS):
-            for row in range(self._BOARD_ROWS):
+        for row in range(self._BOARD_ROWS):
+            for col in range(self._BOARD_COLUMNS):
                 if self._winning_sequence_begins_at(col, row):
                     if winner == None:
-                        winner = self.game_state[col][row]
-                    elif winner != self.game_state[col][row]:
+                        winner = self.game_state[row][col]
+                    elif winner != self.game_state[row][col]:
                         # This handles the rare case of popping a piece
                         # causing both players to have four in a row;
                         # in that case, the last player to make a move
@@ -147,7 +149,7 @@ class Connect4Board(Board):
                         return self.get_player_turn() + " wins!"
         if winner != None:
             return winner + " wins!"
-        return winner
+        return 'Tie!'
 
     def _winning_sequence_begins_at(self, col: int, row: int) -> bool:
         '''
@@ -170,7 +172,7 @@ class Connect4Board(Board):
         beginning in the given column and row and extending in a direction
         specified by the coldelta and rowdelta
         '''
-        start_cell = self.game_state[col][row]
+        start_cell = self.game_state[row][col]
 
         if start_cell in (None, " "):
             return False
@@ -178,7 +180,7 @@ class Connect4Board(Board):
             for i in range(1, 4):
                 if not self._is_valid_column_number(col + coldelta * i) \
                         or not self._is_valid_row_number(row + rowdelta * i) \
-                        or self.game_state[col + coldelta *i][row + rowdelta * i] != start_cell:
+                        or self.game_state[row + rowdelta * i][col + coldelta *i] != start_cell:
                     return False
             return True
             

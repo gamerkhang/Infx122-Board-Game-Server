@@ -38,10 +38,9 @@ class Connect4Logic(GameLogic):
 
         for col in range(board.get_num_columns()):
 
-            for row in range(board.get_num_columns()):
+            for row in range(board.get_num_rows()):
                 if (board.get_game_state()[row][col] in (" ", None)):
                     all_valid_moves.append(col+1)
-                    print('valid_moves: '+str(col+1))
                     break
 
         return all_valid_moves
@@ -73,7 +72,7 @@ class Connect4Logic(GameLogic):
         """ Will check if the game is over and return True if the game is over
             if there is no move for current and next player, otherwise False. """
         
-        return Connect4Logic.all_valid_moves(board) == [] or board.winning_player() != None
+        return Connect4Logic.all_valid_moves(board) == [] or board.winning_player() != 'Tie!'
 
     # @staticmethod
     # def _switch_Turn(board: Connect4Board) -> str:

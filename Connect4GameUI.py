@@ -19,6 +19,7 @@ class Connect4GameUI(GameUI):
                 
                 col = Connect4GameUI.move_col(board)
                 row = Connect4GameUI._get_valid_row(board, col)
+                print(row,col)
                 return row, col
 
                 break
