@@ -237,14 +237,10 @@ class Server(socketserver.BaseRequestHandler):
             print("current_games", current_games)   # For debugging
             self.send_data_to_connection(conn, "PLAYER_MATCHED")
 
-            conns = current_games[first_player + "_" + second_player].get_connections()
+            for con in current_games[first_player + "_" + second_player].get_connections():
+                self.send_data_to_connection(con, "READY")
+                self.send_data_to_connection(con, "GAME-ID@" + first_player + "_" + second_player)
 
-            #for con in current_games[first_player + "_" + second_player].get_connections():
-            self.send_data_to_connection(conns[1], "READY")
-            self.send_data_to_connection(conns[1], "GAME-ID@" + first_player + "_" + second_player)
-
-            self.send_data_to_connection(conns[0], "READY")
-            self.send_data_to_connection(conns[0], "GAME-ID@" + first_player + "_" + second_player)
 
         else:
             self.send_data_to_connection(conn, "PLAYER_NOT_EXIST_ANYMORE")

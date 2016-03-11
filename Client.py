@@ -109,40 +109,45 @@ class Client:
         else:
             self._set_game_in_server()
 
-            self.send_data(Protocol.send_list(self.username, self.game_type))
+            while True:
 
-            data = self.receive_data().strip()
+                self.send_data(Protocol.send_list(self.username, self.game_type))
 
-            player_list = data.split('@')
+                data = self.receive_data().strip()
 
-            del player_list[0]
+                while "MATCH_LIST" not in data:
+                    data = self.receive_data().strip()
 
-            print("\nPlease insert the username that you would like to play with:")
-            print("------------------------------------------------------------")
-            for index in range(len(player_list)):
-                ClientUI.print_detail(str(index + 1) + " -> " + player_list[index])
+                player_list = data.split('@')
 
-            print("----------------------------------------------------------")
-            player_name = ClientUI.get_user_input("\nEnter the username: ")
+                del player_list[0]
 
-            self.send_data(Protocol.play_with(self.username, player_name))
+                print("\nPlease insert the username that you would like to play with:")
+                print("------------------------------------------------------------")
+                for index in range(len(player_list)):
+                    ClientUI.print_detail(str(index + 1) + " -> " + player_list[index])
 
-            _expected_answer = self.receive_data()
+                print("----------------------------------------------------------")
+                player_name = ClientUI.get_user_input("\nEnter the username: ")
 
-            # while True:
-            #     if _expected_answer == "":
-            #         _expected_answer = self.receive_data()
-            #     else:
-            #         break
+                self.send_data(Protocol.play_with(self.username, player_name))
 
-            if _expected_answer == "PLAYER_MATCHED":
-                print("PLAYER_MATCHED from client ", _expected_answer)
-            elif _expected_answer == "PLAYER_NOT_EXIST_ANYMORE":
-                print("Player either disconnected or playing with another user.")
-                print("Please try it again !!!")
-                self.select_player()
-            else:
-                ClientUI.print_detail("Huge error. Server sent back 1>>> " + _expected_answer)
+                _expected_answer = self.receive_data()
+
+                # while True:
+                #     if _expected_answer == "":
+                #         _expected_answer = self.receive_data()
+                #     else:
+                #         break
+
+                if _expected_answer == "PLAYER_MATCHED":
+                    print("PLAYER_MATCHED from client ", _expected_answer)
+                    break
+                elif _expected_answer == "PLAYER_NOT_EXIST_ANYMORE":
+                    print("Player either disconnected or playing with another user.")
+                    print("Please try it again !!!")
+                else:
+                    ClientUI.print_detail("Huge error. Server sent back 1>>> " + _expected_answer)
 
     def setup_game(self):
         _expected_answer = self.receive_data()
@@ -217,7 +222,7 @@ class Client:
                 count = 0
                 temp = _expected_answer.split('@')
                 del temp[0]
-                #print(temp)
+                # print(temp)
                 # print("Before update", self.game_board.get_game_state())
                 for row in range(self.game_board.get_num_rows()):
                     for col in range(self.game_board.get_num_columns()):
