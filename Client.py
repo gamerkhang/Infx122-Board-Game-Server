@@ -44,19 +44,19 @@ class Client:
 
     def login(self):
 
-        while True:
-            self.username = ClientUI.get_user_input("Enter your Username: ")
+        self.username = ClientUI.get_user_input("Enter your Username: ")
 
-            self.send_data(Protocol.login(self.username))
+        self.send_data(Protocol.login(self.username))
 
-            _expected_answer = self.receive_data()
+        _expected_answer = self.receive_data()
 
-            if _expected_answer == "VALID_USERNAME":
-                break
-            elif _expected_answer == "":
-                ClientUI.print_detail("Huge error. Server sent back >>> " + _expected_answer)
-            else:
-                ClientUI.print_detail("Invalid username. Please try it again.")
+        if _expected_answer == "VALID_USERNAME":
+            pass
+        elif _expected_answer == "":
+            ClientUI.print_detail("Huge error. Server sent back >>> " + _expected_answer)
+        else:
+            ClientUI.print_detail("\nInvalid username. Please try it again.\n")
+            self.welcome()
 
     def new_account(self):
 
