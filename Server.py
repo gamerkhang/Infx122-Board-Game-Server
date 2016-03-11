@@ -235,7 +235,7 @@ class Server(socketserver.BaseRequestHandler):
             del wait_list[second_player]
             print("wait_list ", wait_list)  # For debugging
             print("current_games", current_games)   # For debugging
-            self.send_data_to_connection(conn, "PLAYER_MATCHED")
+            # self.send_data_to_connection(conn, "PLAYER_MATCHED")
 
             for con in current_games[first_player + "_" + second_player].get_connections():
                 self.send_data_to_connection(con, "READY")

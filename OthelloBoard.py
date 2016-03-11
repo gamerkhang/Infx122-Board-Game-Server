@@ -31,9 +31,9 @@ class OthelloBoard(Board):
         #                    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']]
 
         self.game_state = [[' ', ' ', ' ', ' '],
-                       [' ', 'W', 'B', ' '],
-                       [' ', 'B', 'W', ' '],
-                       [' ', ' ', ' ', ' ']]
+                           [' ', 'W', 'B', ' '],
+                           [' ', 'B', 'W', ' '],
+                           [' ', ' ', ' ', ' ']]
 
     def get_none(self):
         return self._NONE
