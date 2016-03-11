@@ -133,6 +133,7 @@ class Client:
                 self.send_data(Protocol.play_with(self.username, player_name))
 
                 _expected_answer = self.receive_data()
+               # print("Server confirmed with: ", _expected_answer)
 
                 # while True:
                 #     if _expected_answer == "":
@@ -215,6 +216,7 @@ class Client:
         _expected_answer = self.receive_data()
         while _expected_answer == "":
             _expected_answer = self.receive_data()
+
         while _expected_answer != "GAME_OVER":
 
             if "UPDATE" in _expected_answer:
