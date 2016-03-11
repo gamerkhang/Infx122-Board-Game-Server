@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="1224fe98-3e34-4b24-9e6c-42b07900b7e6" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Client.py" afterPath="$PROJECT_DIR$/Client.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Connect4Board.py" afterPath="$PROJECT_DIR$/Connect4Board.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/OthelloBoard.py" afterPath="$PROJECT_DIR$/OthelloBoard.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Server.py" afterPath="$PROJECT_DIR$/Server.py" />
-    </list>
+    <list default="true" id="1224fe98-3e34-4b24-9e6c-42b07900b7e6" name="Default" comment="" />
     <ignored path="Infx122-Board-Game-Server.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
