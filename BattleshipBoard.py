@@ -24,20 +24,25 @@ class BattleshipBoard:
         self.trackingGrid2 = [ [ self._empty for x in range(self.width) ] for y in range(self.length) ]
 
 
-     #def get_game_state(): #String[][]
-    def get_carrierLength():
+    def get_game_state(self): #String[][]
+        if (self._turn == '1'):
+            return self.primaryGrid1
+        if (self._turn == '2'):
+            return self.primaryGrid2
+        
+    def get_carrierLength(self):
         return self.carrierLength
 
-    def get_battleshipLength():
+    def get_battleshipLength(self):
         return self.battleshipLength
 
-    def get_submarineLength():
+    def get_submarineLength(self):
         return self.submarineLength
 
-    def get_destroyerLength():
+    def get_destroyerLength(self):
         return self.destroyerLength
 
-    def get_patrolLength():
+    def get_patrolLength(self):
         return self.patrolLength
 
     def get_num_rows(self):
@@ -64,7 +69,7 @@ class BattleshipBoard:
     def set_player_turn(self, player):
         self._turn = player
 
-    def switch_turn(self):
+    def switch_Turn(self):
         if (self._turn == '1'):
             self._turn = '2'
         else:

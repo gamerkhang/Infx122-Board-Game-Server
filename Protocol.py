@@ -36,3 +36,7 @@ class Protocol:
     @staticmethod
     def play_game(game_id: str, move: str):
         return "PLAY@" + game_id + "@" + move
+
+    @staticmethod
+    def set_ship(game_id: str, move: str):
+        return "SET@" + game_id + "@" + move

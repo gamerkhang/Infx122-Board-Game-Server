@@ -1,0 +1,187 @@
+import BattleshipBoard
+
+
+class BattleshipGameUI:
+
+    def setUp(self, Board):
+        self.setShip(Board, "Carrier", Board.get_carrierLength())
+        self.print_board(Board)
+        self.setShip(Board, "Battleship", Board.get_battleshipLength())
+        self.print_board(Board)
+        self.setShip(Board, "Submarine", Board.get_submarineLength())
+        self.print_board(Board)
+        self.setShip(Board, "Destroyer", Board.get_destroyerLength())
+        self.print_board(Board)
+        self.setShip(Board, "Patrol", Board.get_patrolLength())
+        self.print_board(Board)
+
+    def setShip(self, Board, shipType, shipLength):
+        while(True):
+            try:
+                X = int(input("Which column would you like to place the {}(length = {})? ".format(shipType, shipLength)))
+                if(not(-1 < X < 11)):
+                    print("ERROR: Column out of range")
+                    continue
+                Y = int(input("Which row would you like to place the {}(length = {})? ".format(shipType, shipLength)))
+                if(not(-1 < Y < 11)):
+                    print("ERROR: Row out of range")
+                    continue
+                D = input("Place {} horizontally or vertically (H or V)? ".format(shipType))
+                if(not(D == 'H' or D == 'h' or D == 'V' or D == 'v')):
+                    print("ERROR: Expecting 'H' or 'V'")
+                    continue
+            except:
+                print("ERROR: Invalid input")
+                continue
+
+
+            if (Board.get_player_turn() == '1'):
+                cells_clear = False
+                if(D == 'H' or D == 'h'):
+                    if(X+shipLength > 10):
+                        print("ERROR: {} horizontal position violates grid boundary.".format(shipType))
+                        continue
+                    for i in range(shipLength):
+                        if(Board.primaryGrid1[Y][X+i] == -1):
+                            print("ERROR: A cell in that position is already taken!")
+                            cells_clear = True
+                            break
+                elif(D == 'V' or D == 'v'):
+                    if(Y+shipLength > 10):
+                        print("ERROR: {} vertical position violates grid boundary.".format(shipType))
+                        continue
+                    for i in range(shipLength):
+                        if(Board.primaryGrid1[Y+i][X] == -1):
+                            print("ERROR: A cell in that position is already taken!")
+                            cells_clear = True
+                            break
+
+                if(cells_clear):
+                    continue
+                        
+                break
+            else:
+                cells_clear = False
+                if(D == 'H' or D == 'h'):
+                    if(X+shipLength > 10):
+                        print("ERROR: {} horizontal position violates grid boundary.".format(shipType))
+                        continue
+                    for i in range(shipLength):
+                        if(Board.primaryGrid2[Y][X+i]== -1):
+                            print("ERROR: A cell in that position is already taken!")
+                            cells_clear = True
+                            break
+                elif(D == 'V' or D == 'v'):
+                    if(Y+shipLength > 10):
+                        print("ERROR: {} vertical position violates grid boundary.".format(shipType))
+                        continue
+                    for i in range(shipLength):
+                        if(Board.primaryGrid2[Y+i][X] == -1):
+                            print("ERROR: A cell in that position is already taken!")
+                            cells_clear = True
+                            break
+
+                if(cells_clear):
+                    continue
+                        
+                break                
+
+        if(D == 'H' or D == 'h'):
+            for i in range(shipLength):
+                if (Board.get_player_turn() == '1'):
+                    Board.primaryGrid1[Y][X+i] = Board._taken
+                else:
+                    Board.primaryGrid2[Y][X+i] = Board._taken
+
+        else:
+            for i in range(shipLength):
+                if (Board.get_player_turn() == '1'):
+                    Board.primaryGrid1[Y+i][X] = Board._taken 
+                else:
+                    Board.primaryGrid2[Y+i][X] = Board._taken            
+
+    @staticmethod
+    def print_board(Board):
+        if(Board.get_player_turn() == '1'):
+            print("Tracking Grid")
+            for x in range(Board.width):
+                print(9-x, Board.trackingGrid1[9-x])
+
+            print("Primary Grid")
+            for x in range(Board.width):
+                print(9-x, Board.primaryGrid1[9-x])
+        else:
+            print("Tracking Grid")
+            for x in range(Board.width):
+                print(9-x, Board.trackingGrid2[9-x])
+
+            print("Primary Grid")
+            for x in range(Board.width):
+                print(9-x, Board.primaryGrid2[9-x])
+
+    @staticmethod
+    def make_move(Board):
+        while(True):
+            try:
+                X = int(input("In which column would you like to send the missile? "))
+                if(not(-1 < X < 11)):
+                    print("ERROR: Column out of range")
+                    continue
+                Y = int(input("In which row would you like to send the missile? "))
+                if(not(-1 < Y < 11)):
+                    print("ERROR: Row out of range")
+                    continue
+                if (not(Board.get_tracking_cell_state(Board,X,Y) == ' ')):
+                    print("ERROR: Attempt already made with that cell.")
+                    continue
+                break
+            except:
+                print("ERROR: Invalid input")
+                continue
+
+        if (Board.get_player_turn() == '1'):
+            opponent = '2'
+            if (Board.get_primary_cell_state(opponent, X, Y) == Board._taken):
+                print("HIT!")
+            else:
+                print("Miss...")
+        else:
+            opponent = '1'
+            if (Board.get_primary_cell_state(opponent, X, Y) == Board._taken):
+                print("HIT!")
+            else:
+                print("Miss...")
+        
+        return X,Y
+
+    @staticmethod
+    def print_scores(Board):
+        print('************SCORES************')
+        print('    1   = {}   &     2   = {} '.format(Board.get_score('1'), Board.get_score('2')))
+
+    @staticmethod
+    def print_winner(Board):
+        if (board.get_score('1') == 0):
+            print("GAME OVER!! Player 2 WINS!!!")
+        elif (board.get_score('2') == 0):
+            print("GAME OVER!! Player 1 WINS!!!")
+
+    @staticmethod
+    def print_turn(Board):
+        print("It is currently Player {}'s turn.".format(Board.get_player_turn()))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    

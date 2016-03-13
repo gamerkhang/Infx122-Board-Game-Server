@@ -10,6 +10,8 @@ from Connect4Logic import Connect4Logic
 
 from GameLogic import GameLogic
 
+from BattleshipBoard import BattleshipBoard
+from BattleshipLogic import BattleshipLogic
 
 all_saved_profiles = []
 wait_list = dict()
@@ -46,6 +48,8 @@ class Server(socketserver.BaseRequestHandler):
                 self._play_with(str_data, conn)
             elif "PLAY" in str_data:
                 self.play_game(str_data, conn)
+            elif "SET" in str_data:
+                self.battleship_update(str_data, conn)
 
             # else:
             #     print("from here")
@@ -146,8 +150,7 @@ class Server(socketserver.BaseRequestHandler):
         elif game == "Othello":
             return OthelloBoard()
         else:
-            pass
-            #return BattleshipBoard()
+            return BattleshipBoard()
 
     def play_game(self, data, conn):
         data = data.split('@')
@@ -166,8 +169,8 @@ class Server(socketserver.BaseRequestHandler):
             current_game_logic = OthelloLogic()
         elif current_game_name == "Connect4":
             current_game_logic = Connect4Logic()
-        # elif current_game_name == "Battleship":
-        #     current_game_logic = "BattleshipLogic()"
+        elif current_game_name == "Battleship":
+            current_game_logic = BattleshipLogic()
         try:
             current_game_logic.make_move(current_game_board, current_move)
 
@@ -205,9 +208,31 @@ class Server(socketserver.BaseRequestHandler):
                     self.send_data_to_connection(connection1, "READY")
                     self.send_data_to_connection(connection2, "WAIT")
 
-        except:
+        except Exception as e:
             print("INVALID_MOVE Exception happened inside server.")
+            print(str(e))
             self.send_data_to_connection(conn, "INVALID_MOVE")
+
+    def battleship_update(self, data, conn):
+        data = data.split('@')
+        current_game_id = data[1]
+        states = data[2:] # each state is a string of the cell state
+        counter = 0
+        if current_games[current_game_id].get_remote_client1() == conn:
+            #update primary board for player 1
+            for row in range(current_games[current_game_id].get_board().get_num_rows()):
+                for col in range(current_games[current_game_id].get_board().get_num_columns()):
+                    current_games[current_game_id].get_board().primaryGrid1[row][col] = states[counter]
+                    counter += 1
+        else:
+            #update primary board for player 2
+            for row in range(current_games[current_game_id].get_board().get_num_rows()):
+                for col in range(current_games[current_game_id].get_board().get_num_columns()):
+                    current_games[current_game_id].get_board().primaryGrid2[row][col] = states[counter]
+                    counter += 1
+
+        print(current_games[current_game_id].get_board().primaryGrid1)
+        print(current_games[current_game_id].get_board().primaryGrid2)
 
     def _send_wait_list(self, str_data, conn):
         match_list = "MATCH_LIST"

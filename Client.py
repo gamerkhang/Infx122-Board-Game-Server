@@ -10,6 +10,9 @@ from OthelloGameUI import OthelloGameUI
 from Connect4Board import Connect4Board
 from Connect4GameUI import Connect4GameUI
 
+from BattleshipBoard import BattleshipBoard
+from BattleshipGameUI import BattleshipGameUI
+
 class Client:
 
     def __init__(self, address=('localhost', 9999)):
@@ -22,6 +25,7 @@ class Client:
         self.game_ui = GameUI()
         self.game_board = Board()
         self.player_key = ""
+        self.battleship_setup = True
     # *********************************
         print("Client connected...")
 
@@ -197,18 +201,31 @@ class Client:
             self.game_board = OthelloBoard()
         elif self.game_type == "Connect4":
             self.game_board = Connect4Board()
-        # else:
-        #     self.game_board = BattleshipBoard()
+        else:
+            self.game_board = BattleshipBoard()
 
     def set_game_ui(self):
         if self.game_type == "Othello":
             self.game_ui = OthelloGameUI()
         elif self.game_type == "Connect4":
             self.game_ui = Connect4GameUI()
-        # else:
-        #     self.game_ui = BattleshipGameUI()
+        else:
+            self.game_ui = BattleshipGameUI()
 
     def play_game(self):
+        if (self.game_type == "Battleship"):
+            if (self.battleship_setup):
+                self.game_ui.setUp(self.game_board)
+                states = ""
+                for row in range(self.game_board.get_num_rows()):
+                    for col in range(self.game_board.get_num_columns()):
+                        states += "@" + self.game_board.get_game_state()[row][col]
+                states += "@"
+
+                self.send_data(Protocol.set_ship(self.game_id, str(states)))
+                
+                self.battleship_setup = False
+                
         if self.player_key == self.game_board.get_player_turn():
             print("\nIt's your turn. Please make your move!!!\nYour game annotation is: ", self.player_key)
             move = self.game_ui.make_move(self.game_board)
