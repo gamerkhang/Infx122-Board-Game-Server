@@ -240,6 +240,29 @@ class Client:
 
         while _expected_answer != "GAME_OVER":
 
+            if "BS_PRIMARY" in _expected_answer: # for Battleship Primary Grid
+                count = 0
+                temp = _expected_answer.split('@')
+                del temp[0]
+                # print("Before update", self.game_board.primaryGrid1)
+                for row in range(self.game_board.get_num_rows()):
+                    for col in range(self.game_board.get_num_columns()):
+                        self.game_board.primaryGrid1[row][col] = temp[count]
+                        count += 1
+                # print("after update", self.game_board.primaryGrid1)
+
+            if "BS_TRACKING" in _expected_answer: # for Battleship Tracking Grid
+                count = 0
+                temp = _expected_answer.split('@')
+                del temp[0]
+                # print("Before update", self.game_board.trackingGrid1)
+                for row in range(self.game_board.get_num_rows()):
+                    for col in range(self.game_board.get_num_columns()):
+                        self.game_board.trackingGrid1[col][row] = temp[count]
+                        count += 1
+                # print("after update", self.game_board.trackingGrid1)
+                
+
             if "UPDATE" in _expected_answer:
                 # print("UPDATE from client")
                 count = 0
@@ -264,14 +287,14 @@ class Client:
                 self.send_data(Protocol.play_game(self.game_id, str(move[0]) + "@" + str(move[1])))
             
             elif _expected_answer == "SWITCH_PLAYER":
-                #print("SWITCH_PLAYER from client")
+                print("SWITCH_PLAYER from client")
                 # print(self.game_board.get_player_turn())
-                # print("Before SWITCH_PLAYER", self.game_board.get_player_turn())
+                print("Before SWITCH_PLAYER", self.game_board.get_player_turn())
                 self.game_board.switch_Turn()
-                # print("After SWITCH_PLAYER", self.game_board.get_player_turn())
+                print("After SWITCH_PLAYER", self.game_board.get_player_turn())
             
             elif "WAIT" in _expected_answer:
-                # print("WAIT from client")
+                print("WAIT from client")
                 self.game_ui.print_scores(self.game_board)
                 self.game_ui.print_board(self.game_board)
                 # self.game_ui.print_turn(self.game_board)
@@ -290,6 +313,7 @@ class Client:
 
             _expected_answer = self.receive_data()
 
+            
         self.game_ui.print_scores(self.game_board)
         self.game_ui.print_board(self.game_board)
         print(self.game_board.winning_player())

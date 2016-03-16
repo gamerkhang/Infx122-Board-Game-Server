@@ -14,15 +14,16 @@ class BattleshipGameUI:
         self.print_board(Board)
         self.setShip(Board, "Patrol", Board.get_patrolLength())
         self.print_board(Board)
+        
 
     def setShip(self, Board, shipType, shipLength):
         while(True):
             try:
-                X = int(input("Which column would you like to place the {}(length = {})? ".format(shipType, shipLength)))
+                X = int(input("Which column would you like to place the {}(length = {})? ".format(shipType, shipLength))) - 1
                 if(not(-1 < X < 11)):
                     print("ERROR: Column out of range")
                     continue
-                Y = int(input("Which row would you like to place the {}(length = {})? ".format(shipType, shipLength)))
+                Y = int(input("Which row would you like to place the {}(length = {})? ".format(shipType, shipLength))) - 1
                 if(not(-1 < Y < 11)):
                     print("ERROR: Row out of range")
                     continue
@@ -102,22 +103,6 @@ class BattleshipGameUI:
 
     @staticmethod
     def print_board(board):
-        '''if(Board.get_player_turn() == '1'):
-            print("Tracking Grid")
-            for x in range(Board.width):
-                print(9-x, Board.trackingGrid1[9-x])
-
-            print("Primary Grid")
-            for x in range(Board.width):
-                print(9-x, Board.primaryGrid1[9-x])
-        else:
-            print("Tracking Grid")
-            for x in range(Board.width):
-                print(9-x, Board.trackingGrid2[9-x])
-
-            print("Primary Grid")
-            for x in range(Board.width):
-                print(9-x, Board.primaryGrid2[9-x])'''
 
         h_line = '   ' + ' ---' * board.get_num_columns() + ' '
 
@@ -133,47 +118,27 @@ class BattleshipGameUI:
             for j in range(8, board.get_num_columns()):
                 col_num += '  ' + str(j+1)
 
-        if(board.get_player_turn() == '1'):
-            print("Tracking Grid")
-            print(col_num)
-            print(h_line)
-            for i in range(board.get_num_rows()):
-                print('{:2d}'.format(i+1), end=' ')
-                for j in range(board.get_num_columns()):
-                    print('| {} '.format(board.trackingGrid1[i][j]), end='')
-                print('|')
-                print(h_line)
 
-            print("\nPrimary Grid")
-            print(col_num)
+        print("Tracking Grid")
+        print(col_num)
+        print(h_line)
+        for i in range(board.get_num_rows()):
+            print('{:2d}'.format(i+1), end=' ')
+            for j in range(board.get_num_columns()):
+                print('| {} '.format(board.trackingGrid1[j][i]), end='')
+            print('|')
             print(h_line)
-            for i in range(board.get_num_rows()):
-                print('{:2d}'.format(i+1), end=' ')
-                for j in range(board.get_num_columns()):
-                    print('| {} '.format(board.primaryGrid1[i][j]), end='')
-                print('|')
-                print(h_line)
 
-        else:
-            print("Tracking Grid")
-            print(col_num)
+        print("\nPrimary Grid")
+        print(col_num)
+        print(h_line)
+        for i in range(board.get_num_rows()):
+            print('{:2d}'.format(i+1), end=' ')
+            for j in range(board.get_num_columns()):
+                print('| {} '.format(board.primaryGrid1[i][j]), end='')
+            print('|')
             print(h_line)
-            for i in range(board.get_num_rows()):
-                print('{:2d}'.format(i+1), end=' ')
-                for j in range(board.get_num_columns()):
-                    print('| {} '.format(board.trackingGrid2[i][j]), end='')
-                print('|')
-                print(h_line)
 
-            print("\nPrimary Grid")
-            print(col_num)
-            print(h_line)
-            for i in range(board.get_num_rows()):
-                print('{:2d}'.format(i+1), end=' ')
-                for j in range(board.get_num_columns()):
-                    print('| {} '.format(board.primaryGrid2[i][j]), end='')
-                print('|')
-                print(h_line)
 
         
 
@@ -181,11 +146,11 @@ class BattleshipGameUI:
     def make_move(Board):
         while(True):
             try:
-                X = int(input("In which column would you like to send the missile? "))
+                X = int(input("In which column would you like to send the missile? ")) - 1
                 if(not(-1 < X < 11)):
                     print("ERROR: Column out of range")
                     continue
-                Y = int(input("In which row would you like to send the missile? "))
+                Y = int(input("In which row would you like to send the missile? ")) - 1
                 if(not(-1 < Y < 11)):
                     print("ERROR: Row out of range")
                     continue
@@ -196,26 +161,13 @@ class BattleshipGameUI:
             except:
                 print("ERROR: Invalid input")
                 continue
-
-        if (Board.get_player_turn() == '1'):
-            opponent = '2'
-            if (Board.get_primary_cell_state(opponent, X, Y) == Board._taken):
-                print("HIT!")
-            else:
-                print("Miss...")
-        else:
-            opponent = '1'
-            if (Board.get_primary_cell_state(opponent, X, Y) == Board._taken):
-                print("HIT!")
-            else:
-                print("Miss...")
         
-        return X,Y
+        return Y,X
 
     @staticmethod
     def print_scores(Board):
         print('************SCORES************')
-        print('    1   = {}   &     2   = {} '.format(Board.get_score('1'), Board.get_score('2')))
+        print('   You  = {}  & Opponent = {} '.format(Board.get_score('1'), Board.get_score('2')))
 
     @staticmethod
     def print_winner(Board):

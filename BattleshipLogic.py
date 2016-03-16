@@ -15,6 +15,8 @@ class BattleshipLogic:
             if (board.get_primary_cell_state(opponent, row, col) == board._taken):
                 board.trackingGrid1[row][col] = board._hit
                 board.primaryGrid2[row][col] = board._hit
+            elif (board.get_primary_cell_state(opponent, row, col) == board._hit):
+                pass
             else:
                 board.trackingGrid1[row][col] = board._miss
                 board.primaryGrid2[row][col] = board._miss
@@ -23,6 +25,8 @@ class BattleshipLogic:
             if (board.get_primary_cell_state(opponent, row, col) == board._taken):
                 board.trackingGrid2[row][col] = board._hit
                 board.primaryGrid1[row][col] = board._hit
+            elif (board.get_primary_cell_state(opponent, row, col) == board._hit):
+                pass
             else:
                 board.trackingGrid2[row][col] = board._miss
                 board.primaryGrid1[row][col] = board._miss

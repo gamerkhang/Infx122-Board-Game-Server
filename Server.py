@@ -172,24 +172,53 @@ class Server(socketserver.BaseRequestHandler):
         elif current_game_name == "Battleship":
             current_game_logic = BattleshipLogic()
         try:
-            current_game_logic.make_move(current_game_board, current_move)
+            if (current_game_name == "Battleship"):
 
-            self.send_data_to_connection(connection1, "VALID_MOVE")
+                current_game_logic.make_move(current_game_board, current_move)
 
-            move = ""
-            for row in range(current_game_board.get_num_rows()):
-                for col in range(current_game_board.get_num_columns()):
-                    move += "@" + current_game_board.get_game_state()[row][col]
-            move += "@"
-            print("Move from server ", move)
+                self.send_data_to_connection(connection1, "VALID_MOVE")
 
-            self.send_data_to_connection(connection1, "UPDATE" + move)
-            self.send_data_to_connection(connection2, "UPDATE" + move)
+                tracking_move = ""
+                for row in range(current_game_board.get_num_rows()):
+                    for col in range(current_game_board.get_num_columns()):
+                        tracking_move += "@" + current_game_board.get_tracking_state()[row][col]
+                tracking_move += "@"
 
-            current_game_logic.switch_Turn(current_game_board)
+                current_game_logic.switch_Turn(current_game_board)
 
-            self.send_data_to_connection(connection1, "SWITCH_PLAYER")
-            self.send_data_to_connection(connection2, "SWITCH_PLAYER")
+                move = ""
+                for row in range(current_game_board.get_num_rows()):
+                    for col in range(current_game_board.get_num_columns()):
+                        move += "@" + current_game_board.get_game_state()[row][col]
+                move += "@"
+                print("Move from server ", move)
+
+                self.send_data_to_connection(connection1, "BS_TRACKING" + tracking_move)
+                self.send_data_to_connection(connection2, "BS_PRIMARY" + move)
+
+
+                self.send_data_to_connection(connection1, "SWITCH_PLAYER")
+                self.send_data_to_connection(connection2, "SWITCH_PLAYER")
+
+            else:
+                current_game_logic.make_move(current_game_board, current_move)
+
+                self.send_data_to_connection(connection1, "VALID_MOVE")
+
+                move = ""
+                for row in range(current_game_board.get_num_rows()):
+                    for col in range(current_game_board.get_num_columns()):
+                        move += "@" + current_game_board.get_game_state()[row][col]
+                move += "@"
+                print("Move from server ", move)
+
+                self.send_data_to_connection(connection1, "UPDATE" + move)
+                self.send_data_to_connection(connection2, "UPDATE" + move)
+
+                current_game_logic.switch_Turn(current_game_board)
+
+                self.send_data_to_connection(connection1, "SWITCH_PLAYER")
+                self.send_data_to_connection(connection2, "SWITCH_PLAYER")
 
             if current_game_logic.game_is_over(current_game_board):
                 self.send_data_to_connection(connection1, "GAME_OVER")
@@ -212,17 +241,20 @@ class Server(socketserver.BaseRequestHandler):
             print("INVALID_MOVE Exception happened inside server.")
             print(str(e))
             self.send_data_to_connection(conn, "INVALID_MOVE")
+            raise e
 
     def battleship_update(self, data, conn):
         data = data.split('@')
         current_game_id = data[1]
         states = data[2:] # each state is a string of the cell state
         counter = 0
-        if current_games[current_game_id].get_remote_client1() == conn:
+        global current_games
+        
+        if current_games[current_game_id].get_connections()[0] == conn:
             #update primary board for player 1
             for row in range(current_games[current_game_id].get_board().get_num_rows()):
                 for col in range(current_games[current_game_id].get_board().get_num_columns()):
-                    current_games[current_game_id].get_board().primaryGrid1[row][col] = states[counter]
+                    current_games[current_game_id].get_board().primaryGrid1[row][col-1] = states[counter]
                     counter += 1
             self.send_data_to_connection(conn, "SWITCH_PLAYER")
             
@@ -230,13 +262,14 @@ class Server(socketserver.BaseRequestHandler):
             #update primary board for player 2
             for row in range(current_games[current_game_id].get_board().get_num_rows()):
                 for col in range(current_games[current_game_id].get_board().get_num_columns()):
-                    current_games[current_game_id].get_board().primaryGrid2[row][col] = states[counter]
+                    current_games[current_game_id].get_board().primaryGrid2[row][col-1] = states[counter]
                     counter += 1
             for con in current_games[current_game_id].get_connections():
                 if con != conn:
                     connection2 = con
             self.send_data_to_connection(connection2, "SWITCH_PLAYER")
         BattleshipLogic().switch_Turn(current_games[current_game_id].get_board())
+
             
 
     def _send_wait_list(self, str_data, conn):
