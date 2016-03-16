@@ -101,8 +101,8 @@ class BattleshipGameUI:
                     Board.primaryGrid2[Y+i][X] = Board._taken            
 
     @staticmethod
-    def print_board(Board):
-        if(Board.get_player_turn() == '1'):
+    def print_board(board):
+        '''if(Board.get_player_turn() == '1'):
             print("Tracking Grid")
             for x in range(Board.width):
                 print(9-x, Board.trackingGrid1[9-x])
@@ -117,7 +117,65 @@ class BattleshipGameUI:
 
             print("Primary Grid")
             for x in range(Board.width):
-                print(9-x, Board.primaryGrid2[9-x])
+                print(9-x, Board.primaryGrid2[9-x])'''
+
+        h_line = '   ' + ' ---' * board.get_num_columns() + ' '
+
+        col_num = '  '
+
+        if (board.get_num_columns()/2) < 5:
+            for i in range(board.get_num_columns()):
+                col_num += '   ' + str(i+1)
+        else:
+            for i in range(8):
+                col_num += '   ' + str(i+1)
+            col_num += ' '
+            for j in range(8, board.get_num_columns()):
+                col_num += '  ' + str(j+1)
+
+        if(board.get_player_turn() == '1'):
+            print("Tracking Grid")
+            print(col_num)
+            print(h_line)
+            for i in range(board.get_num_rows()):
+                print('{:2d}'.format(i+1), end=' ')
+                for j in range(board.get_num_columns()):
+                    print('| {} '.format(board.trackingGrid1[i][j]), end='')
+                print('|')
+                print(h_line)
+
+            print("\nPrimary Grid")
+            print(col_num)
+            print(h_line)
+            for i in range(board.get_num_rows()):
+                print('{:2d}'.format(i+1), end=' ')
+                for j in range(board.get_num_columns()):
+                    print('| {} '.format(board.primaryGrid1[i][j]), end='')
+                print('|')
+                print(h_line)
+
+        else:
+            print("Tracking Grid")
+            print(col_num)
+            print(h_line)
+            for i in range(board.get_num_rows()):
+                print('{:2d}'.format(i+1), end=' ')
+                for j in range(board.get_num_columns()):
+                    print('| {} '.format(board.trackingGrid2[i][j]), end='')
+                print('|')
+                print(h_line)
+
+            print("\nPrimary Grid")
+            print(col_num)
+            print(h_line)
+            for i in range(board.get_num_rows()):
+                print('{:2d}'.format(i+1), end=' ')
+                for j in range(board.get_num_columns()):
+                    print('| {} '.format(board.primaryGrid2[i][j]), end='')
+                print('|')
+                print(h_line)
+
+        
 
     @staticmethod
     def make_move(Board):

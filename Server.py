@@ -224,15 +224,20 @@ class Server(socketserver.BaseRequestHandler):
                 for col in range(current_games[current_game_id].get_board().get_num_columns()):
                     current_games[current_game_id].get_board().primaryGrid1[row][col] = states[counter]
                     counter += 1
+            self.send_data_to_connection(conn, "SWITCH_PLAYER")
+            
         else:
             #update primary board for player 2
             for row in range(current_games[current_game_id].get_board().get_num_rows()):
                 for col in range(current_games[current_game_id].get_board().get_num_columns()):
                     current_games[current_game_id].get_board().primaryGrid2[row][col] = states[counter]
                     counter += 1
-
-        print(current_games[current_game_id].get_board().primaryGrid1)
-        print(current_games[current_game_id].get_board().primaryGrid2)
+            for con in current_games[current_game_id].get_connections():
+                if con != conn:
+                    connection2 = con
+            self.send_data_to_connection(connection2, "SWITCH_PLAYER")
+        BattleshipLogic().switch_Turn(current_games[current_game_id].get_board())
+            
 
     def _send_wait_list(self, str_data, conn):
         match_list = "MATCH_LIST"
