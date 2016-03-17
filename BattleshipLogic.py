@@ -1,4 +1,5 @@
 import BattleshipBoard
+from GameException import *
 
 class BattleshipLogic:
 
@@ -7,9 +8,10 @@ class BattleshipLogic:
 
     @staticmethod
     def make_move(board, move:[str]):
-
+        
         row = int(move[0])
         col = int(move[1])
+        
         if (board.get_player_turn() == '1'):
             opponent = '2'
             if (board.get_primary_cell_state(opponent, row, col) == board._taken):
@@ -60,7 +62,6 @@ class BattleshipLogic:
     @staticmethod
     def all_valid_moves(board):
         return [1,2,3,4,5]
-        
         
             
     

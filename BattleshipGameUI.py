@@ -154,7 +154,7 @@ class BattleshipGameUI:
                 if(not(-1 < Y < 11)):
                     print("ERROR: Row out of range")
                     continue
-                if (not(Board.get_tracking_cell_state(Board,X,Y) == ' ')):
+                if (not(Board.get_tracking_cell_state('1',X,Y) == ' ')):
                     print("ERROR: Attempt already made with that cell.")
                     continue
                 break
