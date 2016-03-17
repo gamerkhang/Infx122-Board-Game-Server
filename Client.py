@@ -144,15 +144,20 @@ class Client:
 
         if _expected_answer == "WAIT":
             ClientUI.print_detail("WAIT for another player...")
-            while True:
-                _expected_answer = self.receive_data()
-                if _expected_answer == "READY":
-                    break
+            #while True:
+                #_expected_answer = self.receive_data()
+                #if _expected_answer == "READY":
+                    #break
+            _expected_answer = self.receive_data()
+            print(_expected_answer)
 
         if _expected_answer == "READY":
             ClientUI.print_detail("READY to player")
-
-        _expected_answer = self.receive_data()
+            _expected_answer = self.receive_data()
+        elif "READY" in _expected_answer:
+            _expected_answer = _expected_answer[5:]
+            print("recv concat~")
+            print(_expected_answer)
 
         if "GAME-ID" in _expected_answer:
             data = _expected_answer.split("@")
@@ -202,9 +207,9 @@ class Client:
                 states += "@"
 
                 self.send_data(Protocol.set_ship(self.game_id, str(states)))
-                
+
                 self.battleship_setup = False
-                
+
         if self.player_key == self.game_board.get_player_turn():
             print("\nIt's your turn. Please make your move!!!\nYour game annotation is: ", self.player_key)
             move = self.game_ui.make_move(self.game_board)
@@ -245,26 +250,26 @@ class Client:
                     for col in range(self.game_board.get_num_columns()):
                         self.game_board.get_game_state()[row][col] = temp[count]
                         count += 1
-            
+
             elif "READY" in _expected_answer:
                 self.game_ui.print_scores(self.game_board)
                 self.game_ui.print_board(self.game_board)
                 print("\nIt's your turn. Please make your move!!!\nYour game annotation is: ", self.player_key)
                 move = self.game_ui.make_move(self.game_board)
                 self.send_data(Protocol.play_game(self.game_id, str(move[0]) + "@" + str(move[1])))
-            
+
             elif _expected_answer == "SWITCH_PLAYER":
                 self.game_board.switch_Turn()
-            
+
             elif "WAIT" in _expected_answer:
                 print("WAIT from client")
                 self.game_ui.print_scores(self.game_board)
                 self.game_ui.print_board(self.game_board)
                 print("\nIt is not your turn. Please wait for the next player to make his/her move.")
-            
+
             elif "NO_MOVE_FOR_YOU" in _expected_answer:
                 print("\nThere is no move for you. Changing the turn.")
-            
+
             elif _expected_answer == "INVALID_MOVE":
                 print("\nInvalid move. Please try it again !!!")
                 move = self.game_ui.make_move(self.game_board)
