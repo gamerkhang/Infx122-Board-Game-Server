@@ -172,8 +172,7 @@ class Server(socketserver.BaseRequestHandler):
         elif current_game_name == "Battleship":
             current_game_logic = BattleshipLogic()
         try:
-            if (current_game_name == "Battleship"):
-
+            if current_game_name == "Battleship":
                 current_game_logic.make_move(current_game_board, current_move)
 
                 self.send_data_to_connection(connection1, "VALID_MOVE")
@@ -195,7 +194,6 @@ class Server(socketserver.BaseRequestHandler):
 
                 self.send_data_to_connection(connection1, "BS_TRACKING" + tracking_move)
                 self.send_data_to_connection(connection2, "BS_PRIMARY" + move)
-
 
                 self.send_data_to_connection(connection1, "SWITCH_PLAYER")
                 self.send_data_to_connection(connection2, "SWITCH_PLAYER")
@@ -241,7 +239,7 @@ class Server(socketserver.BaseRequestHandler):
             print("INVALID_MOVE Exception happened inside server.")
             print(str(e))
             self.send_data_to_connection(conn, "INVALID_MOVE")
-            raise e
+            # raise e
 
     def battleship_update(self, data, conn):
         data = data.split('@')
@@ -269,8 +267,6 @@ class Server(socketserver.BaseRequestHandler):
                     connection2 = con
             self.send_data_to_connection(connection2, "SWITCH_PLAYER")
         BattleshipLogic().switch_Turn(current_games[current_game_id].get_board())
-
-            
 
     def _send_wait_list(self, str_data, conn):
         match_list = "MATCH_LIST"
@@ -303,8 +299,6 @@ class Server(socketserver.BaseRequestHandler):
             for con in current_games[first_player + "_" + second_player].get_connections():
                 self.send_data_to_connection(con, "READY")
                 self.send_data_to_connection(con, "GAME-ID@" + first_player + "_" + second_player)
-
-
         else:
             self.send_data_to_connection(conn, "PLAYER_NOT_EXIST_ANYMORE")
 
