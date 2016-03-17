@@ -84,13 +84,10 @@ class Client:
 
         if user_input.upper() == "C":
             self.game_type = "Connect4"
-            # self.send_data(Protocol.new_game(self.username, "Connect4"))
         elif user_input.upper() == "O":
             self.game_type = "Othello"
-            # self.send_data(Protocol.new_game(self.username, "Othello"))
         else:
             self.game_type = "Battleship"
-            # self.send_data(Protocol.new_game(self.username, "Battleship"))
 
     def _set_game_in_server(self):
 
@@ -110,9 +107,7 @@ class Client:
         if user_input.upper() == "A":
             self._set_game_in_server()
             self.send_data(Protocol.auto_player(self.username))
-            # _expected_answer = self.receive_data()
-            # while _expected_answer != "PLAYER_MATCHED":
-            #     _expected_answer = self.receive_data()
+
         else:
             self._set_game_in_server()
 
@@ -143,20 +138,6 @@ class Client:
                     print("\nThere is no player. Please try it again!!!\n")
                     self.select_player()
                     break
-                # _expected_answer = self.receive_data()
-                # while _expected_answer == "":
-                #     _expected_answer = self.receive_data()
-                # print("Server confirmed with: ", _expected_answer)
-
-
-                # if _expected_answer == "PLAYER_MATCHED":
-                #     # print("PLAYER_MATCHED from client ", _expected_answer)
-                #     break
-                # elif _expected_answer == "PLAYER_NOT_EXIST_ANYMORE":
-                #     print("Player either disconnected or playing with another user.")
-                #     print("Please try it again !!!")
-                # else:
-                #     ClientUI.print_detail("Huge error. Server sent back 1>>> " + _expected_answer)
 
     def setup_game(self):
         _expected_answer = self.receive_data()
@@ -187,14 +168,12 @@ class Client:
                 print("username: ", self.username, "  >>> 1st player >>> Your annotation is: ", self.player_key)
                 self.game_ui.print_scores(self.game_board)
                 self.game_ui.print_board(self.game_board)
-                # self.game_ui.print_turn(self.game_board)
             else:
                 self.player_key = self.game_board.get_next_player()
                 print("Game_ID: ", self.game_id)
                 print("username: ", self.username, "  >>> 2nd player >>> Your annotation is: ", self.player_key)
                 self.game_ui.print_scores(self.game_board)
                 self.game_ui.print_board(self.game_board)
-                # self.game_ui.print_turn(self.game_board)
 
     def set_game_board(self):
         if self.game_type == "Othello":
@@ -213,8 +192,8 @@ class Client:
             self.game_ui = BattleshipGameUI()
 
     def play_game(self):
-        if (self.game_type == "Battleship"):
-            if (self.battleship_setup):
+        if self.game_type == "Battleship":
+            if self.battleship_setup:
                 self.game_ui.setUp(self.game_board)
                 states = ""
                 for row in range(self.game_board.get_num_rows()):
@@ -244,60 +223,43 @@ class Client:
                 count = 0
                 temp = _expected_answer.split('@')
                 del temp[0]
-                # print("Before update", self.game_board.primaryGrid1)
                 for row in range(self.game_board.get_num_rows()):
                     for col in range(self.game_board.get_num_columns()):
                         self.game_board.primaryGrid1[row][col] = temp[count]
                         count += 1
-                # print("after update", self.game_board.primaryGrid1)
 
             if "BS_TRACKING" in _expected_answer: # for Battleship Tracking Grid
                 count = 0
                 temp = _expected_answer.split('@')
                 del temp[0]
-                # print("Before update", self.game_board.trackingGrid1)
                 for row in range(self.game_board.get_num_rows()):
                     for col in range(self.game_board.get_num_columns()):
                         self.game_board.trackingGrid1[col][row] = temp[count]
                         count += 1
-                # print("after update", self.game_board.trackingGrid1)
-                
 
             if "UPDATE" in _expected_answer:
-                # print("UPDATE from client")
                 count = 0
                 temp = _expected_answer.split('@')
                 del temp[0]
-                # print(temp)
-                # print("Before update", self.game_board.get_game_state())
                 for row in range(self.game_board.get_num_rows()):
                     for col in range(self.game_board.get_num_columns()):
                         self.game_board.get_game_state()[row][col] = temp[count]
                         count += 1
-                # print("after update", self.game_board.get_game_state())
             
             elif "READY" in _expected_answer:
-                # print("READY from client")
                 self.game_ui.print_scores(self.game_board)
                 self.game_ui.print_board(self.game_board)
-                # print(self.game_board.get_player_turn())
-                # self.game_ui.print_turn(self.game_board)
                 print("\nIt's your turn. Please make your move!!!\nYour game annotation is: ", self.player_key)
                 move = self.game_ui.make_move(self.game_board)
                 self.send_data(Protocol.play_game(self.game_id, str(move[0]) + "@" + str(move[1])))
             
             elif _expected_answer == "SWITCH_PLAYER":
-                print("SWITCH_PLAYER from client")
-                # print(self.game_board.get_player_turn())
-                print("Before SWITCH_PLAYER", self.game_board.get_player_turn())
                 self.game_board.switch_Turn()
-                print("After SWITCH_PLAYER", self.game_board.get_player_turn())
             
             elif "WAIT" in _expected_answer:
                 print("WAIT from client")
                 self.game_ui.print_scores(self.game_board)
                 self.game_ui.print_board(self.game_board)
-                # self.game_ui.print_turn(self.game_board)
                 print("\nIt is not your turn. Please wait for the next player to make his/her move.")
             
             elif "NO_MOVE_FOR_YOU" in _expected_answer:
@@ -309,80 +271,29 @@ class Client:
                 self.send_data(Protocol.play_game(self.game_id, str(move[0]) + "@" + str(move[1])))
             else:
                 pass
-                # print("Else from client ", _expected_answer)
 
             _expected_answer = self.receive_data()
 
-            
         self.game_ui.print_scores(self.game_board)
         self.game_ui.print_board(self.game_board)
         print(self.game_board.winning_player())
-
-    def chat(self):
-
-        message = eval(input("Enter 1 or 2: "))
-
-        if message == 1:
-            play = True
-
-            while True:
-                if play:
-                    message = input("Enter message: ") # takes input for what to send
-
-                    if message == "quit": # check to see if user quits
-                        self.client_socket.close()  # closes socket is user quicks
-                        break  # breaks out of looop and exits program
-
-                    self.send_data(message)
-                    #self.client_socket.sendto(message.encode(), self.address)
-                    data = self.receive_data()
-                    print(data)
-                    #data = self.client_socket.recv(1024) # waits for a reply from Server
-                    # print(data.decode("utf-8")) # print reply from Server
-                    if data != "quit":
-                        play = False
-                    else:
-                        play = True
-                else:
-                    data = self.receive_data()
-                    print(data)
-                    #data = self.client_socket.recv(1024) # waits for a reply from Server
-                    #print(data.decode("utf-8"))  # print reply from Server
-                    play = True
-        else:
-
-            play = False
-
-            while True:
-
-                if play:
-                    message = input("Enter message: ") # takes input for what to send
-
-                    if message == "quit": # check to see if user quits
-                        self.client_socket.close()  # closes socket is user quicks
-                        break  # breaks out of looop and exits program
-
-                    self.send_data(message)
-                    data = self.receive_data()
-                    print(data)
-                    #self.client_socket.sendto(message.encode(), self.address) # allows client to send data to Server
-                    #data = self.client_socket.recv(1024) # waits for a reply from Server
-                    #print(data.decode("utf-8") ) # print reply from Server
-                    play = False
-                else:
-                    data = self.receive_data()
-                    print(data)
-                    #data = self.client_socket.recv(1024) # waits for a reply from Server
-                    #print(data.decode("utf-8")) # print reply from Server
-                    play = True
 
 
 if __name__ == '__main__':
 
     client = Client()
     client.welcome()
-    client.select_game()
-    client.select_player()
-    client.setup_game()
-    client.play_game()
-    #client.chat()
+    user_input = ""
+    while user_input != "Q":
+        client.select_game()
+        client.select_player()
+        client.setup_game()
+        client.play_game()
+        while True:
+            user_input = ClientUI.get_user_input("\n****** Make a Selection ******\np -> Play Again:\nq -> Quit:\n").upper()
+            if user_input not in ["Q", "P"]:
+                ClientUI.print_detail("\nInvalid input. Please try it again !!!")
+            else:
+                break
+
+    ClientUI.print_detail("\nGood Bye!!!")
