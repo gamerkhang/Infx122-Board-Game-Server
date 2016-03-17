@@ -43,7 +43,8 @@ class BattleshipGameUI:
                         print("ERROR: {} horizontal position violates grid boundary.".format(shipType))
                         continue
                     for i in range(shipLength):
-                        if(Board.primaryGrid1[Y][X+i] == -1):
+                        #if(Board.primaryGrid1[Y][X+i] == -1):
+                        if(Board.primaryGrid1[Y][X+i] == Board._taken):
                             print("ERROR: A cell in that position is already taken!")
                             cells_clear = True
                             break
@@ -52,7 +53,8 @@ class BattleshipGameUI:
                         print("ERROR: {} vertical position violates grid boundary.".format(shipType))
                         continue
                     for i in range(shipLength):
-                        if(Board.primaryGrid1[Y+i][X] == -1):
+                        #if(Board.primaryGrid1[Y+i][X] == -1):
+                        if(Board.primaryGrid1[Y][X+i] == Board._taken):
                             print("ERROR: A cell in that position is already taken!")
                             cells_clear = True
                             break
@@ -68,7 +70,8 @@ class BattleshipGameUI:
                         print("ERROR: {} horizontal position violates grid boundary.".format(shipType))
                         continue
                     for i in range(shipLength):
-                        if(Board.primaryGrid2[Y][X+i]== -1):
+                        #if(Board.primaryGrid2[Y][X+i]== -1):
+                        if(Board.primaryGrid1[Y][X+i] == Board._taken):
                             print("ERROR: A cell in that position is already taken!")
                             cells_clear = True
                             break
@@ -77,7 +80,8 @@ class BattleshipGameUI:
                         print("ERROR: {} vertical position violates grid boundary.".format(shipType))
                         continue
                     for i in range(shipLength):
-                        if(Board.primaryGrid2[Y+i][X] == -1):
+                        #if(Board.primaryGrid2[Y+i][X] == -1):
+                        if(Board.primaryGrid1[Y][X+i] == Board._taken):
                             print("ERROR: A cell in that position is already taken!")
                             cells_clear = True
                             break
