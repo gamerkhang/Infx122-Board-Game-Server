@@ -109,7 +109,7 @@ class Client:
             self.send_data(Protocol.auto_player(self.username))
 
         else:
-            self.set_game_in_server()
+            # self.set_game_in_server()
 
             while True:
 
@@ -131,7 +131,7 @@ class Client:
 
                     print("----------------------------------------------------------")
                     player_name = ClientUI.get_user_input("\nEnter the username: ")
-
+                    self.set_game_in_server()
                     self.send_data(Protocol.play_with(self.username, player_name))
                     break
                 else:
@@ -153,8 +153,8 @@ class Client:
             _expected_answer = self.receive_data()
         elif "READY" in _expected_answer:
             _expected_answer = _expected_answer[5:]
-            print("recv concat~")
-            print(_expected_answer)
+            #print("recv concat~")
+            #print(_expected_answer)
 
         if "GAME-ID" in _expected_answer:
             data = _expected_answer.split("@")
