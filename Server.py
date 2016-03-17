@@ -51,14 +51,6 @@ class Server(socketserver.BaseRequestHandler):
             elif "SET" in str_data:
                 self.battleship_update(str_data, conn)
 
-            # else:
-            #     print("from here")
-            #
-            #     for key in self.current_games.keys():
-            #         for con in self.current_games[key].get_connections():
-            #             print(con)
-            #             self.send_data(con, self.data)
-
     def receive_data(self):
         data = self.request.recv(1024).strip()
         str_data = data.decode("utf-8")
@@ -108,8 +100,6 @@ class Server(socketserver.BaseRequestHandler):
             self.send_data_to_connection(conn, "USERNAME_EXIST")
         else:
             all_saved_profiles += [Profile(username)]
-            # global wait_list
-            # wait_list[data[1]] = ("GAME_NOT_SET", RemoteClient(conn))
             self.send_data_to_connection(conn, "VALID_USERNAME")
 
     def _new_game(self, data, conn):
@@ -296,7 +286,6 @@ class Server(socketserver.BaseRequestHandler):
             del wait_list[second_player]
             print("wait_list ", wait_list)  # For debugging
             print("current_games", current_games)   # For debugging
-            # self.send_data_to_connection(conn, "PLAYER_MATCHED")
 
             for con in current_games[first_player + "_" + second_player].get_connections():
                 self.send_data_to_connection(con, "READY")

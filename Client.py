@@ -144,10 +144,7 @@ class Client:
 
         if _expected_answer == "WAIT":
             ClientUI.print_detail("WAIT for another player...")
-            #while True:
-                #_expected_answer = self.receive_data()
-                #if _expected_answer == "READY":
-                    #break
+
             _expected_answer = self.receive_data()
             print(_expected_answer)
 
