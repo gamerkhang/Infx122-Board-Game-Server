@@ -36,4 +36,4 @@ class Protocol:
 
     @staticmethod
     def set_ship(game_id: str, move: str) -> str:
-        return "SET@" + game_id + "@" + move
+        return "SET@" + game_id + move

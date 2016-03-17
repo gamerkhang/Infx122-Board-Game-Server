@@ -244,7 +244,7 @@ class Server(socketserver.BaseRequestHandler):
             #update primary board for player 1
             for row in range(current_games[current_game_id].get_board().get_num_rows()):
                 for col in range(current_games[current_game_id].get_board().get_num_columns()):
-                    current_games[current_game_id].get_board().primaryGrid1[row][col-1] = states[counter]
+                    current_games[current_game_id].get_board().primaryGrid1[row][col] = states[counter]
                     counter += 1
             self.send_data_to_connection(conn, "SWITCH_PLAYER")
 
@@ -252,7 +252,7 @@ class Server(socketserver.BaseRequestHandler):
             #update primary board for player 2
             for row in range(current_games[current_game_id].get_board().get_num_rows()):
                 for col in range(current_games[current_game_id].get_board().get_num_columns()):
-                    current_games[current_game_id].get_board().primaryGrid2[row][col-1] = states[counter]
+                    current_games[current_game_id].get_board().primaryGrid2[row][col] = states[counter]
                     counter += 1
             for con in current_games[current_game_id].get_connections():
                 if con != conn:
