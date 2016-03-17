@@ -17,9 +17,6 @@ class Protocol:
     def auto_player(username: str) -> str:
         return "AUTO@" + username
 
-    @staticmethod
-    def list_of_players(thelist: str) -> str:
-        return thelist
 
     @staticmethod
     def list_match(username: str, player: str) -> str:
@@ -34,9 +31,9 @@ class Protocol:
         return "SEND_LIST@" + username + "@" + game_name
 
     @staticmethod
-    def play_game(game_id: str, move: str):
+    def play_game(game_id: str, move: str) -> str:
         return "PLAY@" + game_id + "@" + move
 
     @staticmethod
-    def set_ship(game_id: str, move: str):
+    def set_ship(game_id: str, move: str) -> str:
         return "SET@" + game_id + "@" + move
