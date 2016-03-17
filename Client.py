@@ -211,7 +211,11 @@ class Client:
                 self.battleship_setup = False
 
         if self.player_key == self.game_board.get_player_turn():
-            print("\nIt's your turn. Please make your move!!!\nYour game annotation is: ", self.player_key)
+            if self.game_type == "Battleship":
+                print("\nIt's your turn. Please make your move!!!\n")
+            else:
+                print("\nIt's your turn. Please make your move!!!\nYour game annotation is: ", self.player_key, "\n")
+            
             move = self.game_ui.make_move(self.game_board)
 
             self.send_data(Protocol.play_game(self.game_id, str(move[0]) + "@" + str(move[1])))
