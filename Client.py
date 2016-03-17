@@ -76,7 +76,7 @@ class Client:
             elif _expected_answer == "":
                 print("Huge error. Server sent back >>> ", _expected_answer)
             else:
-                print("Someone already has that username. Try another?")
+                print("Someone already has that username. Try another? [CANNOT CONTAIN '@' OR '_']")
 
     def select_game(self):
 

@@ -104,6 +104,8 @@ class Server(socketserver.BaseRequestHandler):
 
         if username_exist:
             self.send_data_to_connection(conn, "USERNAME_EXIST")
+        elif "_" in username or "@" in username:
+            self.send_data_to_connection(conn, "USERNAME_EXIST")
         else:
             all_saved_profiles += [Profile(username)]
             # global wait_list
@@ -247,7 +249,7 @@ class Server(socketserver.BaseRequestHandler):
         states = data[2:] # each state is a string of the cell state
         counter = 0
         global current_games
-        
+
         if current_games[current_game_id].get_connections()[0] == conn:
             #update primary board for player 1
             for row in range(current_games[current_game_id].get_board().get_num_rows()):
@@ -255,7 +257,7 @@ class Server(socketserver.BaseRequestHandler):
                     current_games[current_game_id].get_board().primaryGrid1[row][col-1] = states[counter]
                     counter += 1
             self.send_data_to_connection(conn, "SWITCH_PLAYER")
-            
+
         else:
             #update primary board for player 2
             for row in range(current_games[current_game_id].get_board().get_num_rows()):

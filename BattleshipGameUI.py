@@ -14,7 +14,7 @@ class BattleshipGameUI:
         self.print_board(Board)
         self.setShip(Board, "Patrol", Board.get_patrolLength())
         self.print_board(Board)
-        
+
 
     def setShip(self, Board, shipType, shipLength):
         while(True):
@@ -54,14 +54,14 @@ class BattleshipGameUI:
                         continue
                     for i in range(shipLength):
                         #if(Board.primaryGrid1[Y+i][X] == -1):
-                        if(Board.primaryGrid1[Y][X+i] == Board._taken):
+                        if(Board.primaryGrid1[Y+i][X] == Board._taken):
                             print("ERROR: A cell in that position is already taken!")
                             cells_clear = True
                             break
 
                 if(cells_clear):
                     continue
-                        
+
                 break
             else:
                 cells_clear = False
@@ -71,7 +71,7 @@ class BattleshipGameUI:
                         continue
                     for i in range(shipLength):
                         #if(Board.primaryGrid2[Y][X+i]== -1):
-                        if(Board.primaryGrid1[Y][X+i] == Board._taken):
+                        if(Board.primaryGrid1[Y+i][X] == Board._taken):
                             print("ERROR: A cell in that position is already taken!")
                             cells_clear = True
                             break
@@ -88,8 +88,8 @@ class BattleshipGameUI:
 
                 if(cells_clear):
                     continue
-                        
-                break                
+
+                break
 
         if(D == 'H' or D == 'h'):
             for i in range(shipLength):
@@ -101,9 +101,9 @@ class BattleshipGameUI:
         else:
             for i in range(shipLength):
                 if (Board.get_player_turn() == '1'):
-                    Board.primaryGrid1[Y+i][X] = Board._taken 
+                    Board.primaryGrid1[Y+i][X] = Board._taken
                 else:
-                    Board.primaryGrid2[Y+i][X] = Board._taken            
+                    Board.primaryGrid2[Y+i][X] = Board._taken
 
     @staticmethod
     def print_board(board):
@@ -144,7 +144,7 @@ class BattleshipGameUI:
             print(h_line)
 
 
-        
+
 
     @staticmethod
     def make_move(Board):
@@ -165,7 +165,7 @@ class BattleshipGameUI:
             except:
                 print("ERROR: Invalid input")
                 continue
-        
+
         return Y,X
 
     @staticmethod
@@ -183,19 +183,3 @@ class BattleshipGameUI:
     @staticmethod
     def print_turn(Board):
         print("It is currently Player {}'s turn.".format(Board.get_player_turn()))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
