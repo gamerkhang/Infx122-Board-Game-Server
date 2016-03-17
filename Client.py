@@ -34,7 +34,7 @@ class Client:
         # print("client Received Message >>>", data)  # For debugging
         return data.strip()
 
-    def send_data(self, data):
+    def send_data(self, data: str):
         self.client_socket.sendall(bytes(data + "\n", "utf-8"))
 
     def welcome(self):
@@ -89,7 +89,7 @@ class Client:
         else:
             self.game_type = "Battleship"
 
-    def _set_game_in_server(self):
+    def set_game_in_server(self):
 
         self.send_data(Protocol.new_game(self.username, self.game_type))
 
@@ -105,11 +105,11 @@ class Client:
         user_input = ClientUI.select_player()
 
         if user_input.upper() == "A":
-            self._set_game_in_server()
+            self.set_game_in_server()
             self.send_data(Protocol.auto_player(self.username))
 
         else:
-            self._set_game_in_server()
+            self.set_game_in_server()
 
             while True:
 
