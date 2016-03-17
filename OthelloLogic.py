@@ -172,14 +172,3 @@ class OthelloLogic(GameLogic):
 
 
 
-    # def _switch_dice(self) -> None:
-    #     """ Will change the dice type. White to black or vice versa. """
-    #
-    #     if self._TOP_LEFT == self._BLACK:
-    #
-    #         self._TOP_LEFT = self._WHITE
-    #
-    #     else:
-    #
-    #         self._TOP_LEFT = self._BLACK
-
