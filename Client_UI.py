@@ -2,11 +2,11 @@
 class ClientUI:
 
     @staticmethod
-    def get_user_input(prompt_message) -> str:
+    def get_user_input(prompt_message : str) -> str:
         return input(prompt_message).strip()
 
     @staticmethod
-    def print_detail(message) -> None:
+    def print_detail(message : str) -> None:
         print(message)
 
     @staticmethod
