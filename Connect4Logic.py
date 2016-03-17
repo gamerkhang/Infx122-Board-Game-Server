@@ -6,17 +6,6 @@ from Connect4Board import Connect4Board
 
 class Connect4Logic(GameLogic):
 
-    # @staticmethod
-    # def valid_row(board: Connect4Board, row: int) -> bool:
-        # """ Will take the row number and return True if the row number is valid,
-            # otherwise, False. """
-
-        # # if (0 <= row < self._BOARD_ROWS):
-        # if 0 <= row < board.get_num_rows():
-
-            # return True
-
-        # return False
 
     @staticmethod
     def valid_col(board: Connect4Board, col: int) -> bool:
@@ -61,7 +50,7 @@ class Connect4Logic(GameLogic):
         board.get_game_state()[row][col] = board.get_player_turn()
 
     @staticmethod
-    def _get_valid_row(board: Connect4Board, col: int) -> None:
+    def _get_valid_row(board: Connect4Board, col: int) -> int:
          for row in range(board.get_num_rows()):
             if (board.get_game_state()[board.get_num_rows() - row - 1][col] in (" ", None)):
                 return board.get_num_rows() - row - 1
@@ -74,15 +63,6 @@ class Connect4Logic(GameLogic):
         
         return Connect4Logic.all_valid_moves(board) == [] or board.winning_player() != 'Tie!'
 
-    # @staticmethod
-    # def _switch_Turn(board: Connect4Board) -> str:
-        # """ Return the next player's turn. """
-
-        # if board.get_player_turn() == board.get_black():
-
-            # return board.get_white()
-
-        # return board.get_black()
 
     @staticmethod
     def switch_Turn(board: Connect4Board) -> None:
@@ -94,16 +74,4 @@ class Connect4Logic(GameLogic):
         else:
             board.set_player_turn(board.get_red())
 
-
-
-    # def _switch_dice(self) -> None:
-    #     """ Will change the dice type. White to black or vice versa. """
-    #
-    #     if self._TOP_LEFT == self._BLACK:
-    #
-    #         self._TOP_LEFT = self._WHITE
-    #
-    #     else:
-    #
-    #         self._TOP_LEFT = self._BLACK
 
