@@ -29,7 +29,7 @@ class Connect4GameUI(GameUI):
                 print('Please try it again.')
                 
     @staticmethod           
-    def _get_valid_row(board: Connect4Board, col: int) -> None:
+    def _get_valid_row(board: Connect4Board, col: int) -> int:
          for row in range(board.get_num_rows()):
             if (board.get_game_state()[board.get_num_rows() - row - 1][col] in (" ", None)):
                 return board.get_num_rows() - row - 1
